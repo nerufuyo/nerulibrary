@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter/painting.dart';
 
 /// Performance monitoring and optimization service
 ///
@@ -148,7 +147,7 @@ class PerformanceService {
     if (currentUsage > 100 * 1024 * 1024) {
       // 100MB
       if (kDebugMode) {
-        print(
+        debugPrint(
             'WARNING: High memory usage detected: ${(currentUsage / 1024 / 1024).toStringAsFixed(1)}MB');
       }
     }
@@ -204,19 +203,19 @@ class PerformanceService {
     switch (metric.name) {
       case 'app_startup_time':
         if (metric.value > 3000) {
-          print(
+          debugPrint(
               'PERFORMANCE WARNING: Slow startup time: ${metric.value}ms (target: <3000ms)');
         }
         break;
       case 'frame_time':
         if (metric.value > 16.67) {
-          print(
+          debugPrint(
               'PERFORMANCE WARNING: Slow frame: ${metric.value}ms (target: <16.67ms for 60fps)');
         }
         break;
       default:
         if (metric.value > 1000) {
-          print(
+          debugPrint(
               'PERFORMANCE WARNING: Slow operation "${metric.name}": ${metric.value}ms');
         }
     }

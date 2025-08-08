@@ -29,10 +29,10 @@ class EpubReaderServiceImpl implements EpubReaderService {
   final StreamController<double> _loadingController = StreamController<double>.broadcast();
   
   /// List of chapters extracted from EPUB
-  List<EpubChapter> _chapters = [];
+  final List<EpubChapter> _chapters = [];
   
   /// Table of contents entries
-  List<TableOfContentsEntry> _tableOfContents = [];
+  final List<TableOfContentsEntry> _tableOfContents = [];
   
   /// Whether the EPUB is currently loaded
   bool _isLoaded = false;

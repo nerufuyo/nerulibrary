@@ -81,7 +81,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
             Text(
               'Your Digital Library Companion',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8),
+                color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
               ),
             ),
             

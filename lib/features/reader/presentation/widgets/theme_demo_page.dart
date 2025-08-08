@@ -52,7 +52,7 @@ class ThemeDemoPage extends ConsumerWidget {
             children: [
               // Current Configuration Display
               Card(
-                color: config.readingTheme.backgroundColor,
+                color: config.readingTheme.surfaceColor,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -275,7 +275,7 @@ class _ThemeCard extends StatelessWidget {
         width: 120,
         height: 80,
         decoration: BoxDecoration(
-          color: theme.backgroundColor,
+          color: theme.surfaceColor,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected ? theme.primaryColor : Colors.grey.shade300,

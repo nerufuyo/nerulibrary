@@ -35,7 +35,7 @@ class BookSearchNotifier extends AsyncNotifier<SearchResult?> {
       
       // Mock search results using proper types
       final books = List.generate(10, (index) => BookSearchItem(
-        id: 'book_${query}_$index',
+        id: 'book_$query_$index',
         title: 'Sample Book $index for "$query"',
         authors: ['Author $index'],
         subjects: ['Subject $index'],

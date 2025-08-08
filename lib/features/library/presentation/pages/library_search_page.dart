@@ -604,9 +604,9 @@ class _LibrarySearchPageState extends ConsumerState<LibrarySearchPage> {
       
       // Mock suggestions
       final mockSuggestions = [
-        '${partialQuery}ing',
-        '${partialQuery} guide',
-        '${partialQuery} tutorial',
+        '$partialQuerying',
+        '$partialQuery guide',
+        '$partialQuery tutorial',
       ];
 
       if (mounted) {

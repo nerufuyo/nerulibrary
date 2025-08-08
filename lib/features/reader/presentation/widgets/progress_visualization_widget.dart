@@ -109,7 +109,7 @@ class ProgressVisualizationWidget extends ConsumerWidget {
       children: [
         LinearProgressIndicator(
           value: progress.progressFraction,
-          backgroundColor: colors.background,
+          backgroundColor: colors.surface,
           valueColor: AlwaysStoppedAnimation<Color>(colors.accent),
           minHeight: 8.0,
         ),
@@ -146,7 +146,7 @@ class ProgressVisualizationWidget extends ConsumerWidget {
             CircularProgressIndicator(
               value: progress.progressFraction,
               strokeWidth: 8.0,
-              backgroundColor: colors.background,
+              backgroundColor: colors.surface,
               valueColor: AlwaysStoppedAnimation<Color>(colors.accent),
             ),
             Center(
@@ -181,7 +181,7 @@ class ProgressVisualizationWidget extends ConsumerWidget {
       child: CustomPaint(
         painter: ArcProgressPainter(
           progress: progress.progressFraction,
-          backgroundColor: colors.background,
+          backgroundColor: colors.surface,
           progressColor: colors.accent,
           strokeWidth: 12.0,
         ),
@@ -225,7 +225,7 @@ class ProgressVisualizationWidget extends ConsumerWidget {
                 height: 8,
                 margin: const EdgeInsets.symmetric(horizontal: 1),
                 decoration: BoxDecoration(
-                  color: isCompleted ? colors.accent : colors.background,
+                  color: isCompleted ? colors.accent : colors.surface,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -384,7 +384,7 @@ class ArcProgressPainter extends CustomPainter {
 
   ArcProgressPainter({
     required this.progress,
-    required this.backgroundColor,
+    required this.surfaceColor,
     required this.progressColor,
     required this.strokeWidth,
   });
@@ -429,7 +429,7 @@ class ArcProgressPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return oldDelegate is ArcProgressPainter &&
         (oldDelegate.progress != progress ||
-            oldDelegate.backgroundColor != backgroundColor ||
+            oldDelegate.surfaceColor != backgroundColor ||
             oldDelegate.progressColor != progressColor ||
             oldDelegate.strokeWidth != strokeWidth);
   }

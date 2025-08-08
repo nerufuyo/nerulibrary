@@ -433,7 +433,7 @@ class BookAuthor {
   bool get isAlive => deathDate == null;
   bool get hasBiography => biography != null && biography!.isNotEmpty;
   String get displayName =>
-      aliases.isNotEmpty ? '${name} (${aliases.first})' : name;
+      aliases.isNotEmpty ? '$name (${aliases.first})' : name;
 
   String get lifeSpan {
     final birth = birthDate?.year.toString() ?? '?';

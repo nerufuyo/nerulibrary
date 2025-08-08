@@ -484,7 +484,7 @@ class OpenLibraryRepository
     );
     final paramString =
         sortedParams.entries.map((e) => '${e.key}=${e.value}').join('&');
-    return 'openlibrary_${operation}_$paramString';
+    return 'openlibrary_$operation_$paramString';
   }
 
   /// Parse date string to DateTime

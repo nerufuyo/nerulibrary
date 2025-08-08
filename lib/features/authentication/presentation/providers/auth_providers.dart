@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' hide User, Provider;
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 import '../../../../core/storage/secure_storage.dart';
 import '../../domain/entities/user.dart';

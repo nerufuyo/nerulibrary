@@ -78,7 +78,6 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
   static const String _baseUrl = 'https://openlibrary.org';
   static const String _coversBaseUrl = 'https://covers.openlibrary.org/b';
   static const Duration _requestTimeout = Duration(seconds: 30);
-  static const int _maxRetries = 3;
 
   // Rate limiting: 100 requests per minute
   static const int _maxRequestsPerMinute = 100;

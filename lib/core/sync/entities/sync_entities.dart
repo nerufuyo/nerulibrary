@@ -340,7 +340,7 @@ class SyncSession extends Equatable {
   });
 
   /// Simple constructor for sync service
-  SyncSession.simple({
+  const SyncSession.simple({
     required this.id,
     required this.startedAt,
     this.completedAt,

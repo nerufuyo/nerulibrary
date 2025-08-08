@@ -317,8 +317,9 @@ class FileManager {
   String _formatBytes(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024)
+    if (bytes < 1024 * 1024 * 1024) {
       return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -394,8 +395,9 @@ class FileInfo {
   String get formattedSize {
     if (size < 1024) return '$size B';
     if (size < 1024 * 1024) return '${(size / 1024).toStringAsFixed(1)} KB';
-    if (size < 1024 * 1024 * 1024)
+    if (size < 1024 * 1024 * 1024) {
       return '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
     return '${(size / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 

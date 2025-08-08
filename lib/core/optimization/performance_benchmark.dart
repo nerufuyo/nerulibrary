@@ -231,7 +231,7 @@ class PerformanceBenchmark {
         stopwatch.start();
         await _simulateImageLoading(size);
         stopwatch.stop();
-        tests['${size}_image_ms'] = stopwatch.elapsedMilliseconds.toDouble();
+        tests['$size_image_ms'] = stopwatch.elapsedMilliseconds.toDouble();
       }
 
       // Test cache performance
@@ -554,7 +554,7 @@ class BenchmarkResult {
     buffer.writeln('Performance Benchmark Results');
     buffer.writeln('============================');
     buffer.writeln('Timestamp: ${timestamp.toIso8601String()}');
-    buffer.writeln('Total Duration: ${totalDuration}ms');
+    buffer.writeln('Total Duration: $totalDurationms');
     buffer.writeln('Overall Score: ${overallScore.toStringAsFixed(1)}/100');
     buffer.writeln('Targets Met: ${targetsMet ? 'YES' : 'NO'}');
 
@@ -608,7 +608,7 @@ class BenchmarkTestResult {
     final buffer = StringBuffer();
     buffer.writeln('Test: $testName');
     buffer.writeln('Status: ${passed ? 'PASSED' : 'FAILED'}');
-    buffer.writeln('Duration: ${duration}ms');
+    buffer.writeln('Duration: $durationms');
     buffer.writeln('Score: ${score.toStringAsFixed(1)}/100');
 
     if (error != null) {

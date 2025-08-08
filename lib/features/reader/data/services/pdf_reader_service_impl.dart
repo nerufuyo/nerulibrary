@@ -35,7 +35,7 @@ class PdfReaderServiceImpl implements PdfReaderService {
   final StreamController<double> _loadingController = StreamController<double>.broadcast();
   
   /// PDF document information
-  Map<String, dynamic> _pdfInfo = {};
+  final Map<String, dynamic> _pdfInfo = {};
   
   /// Total pages in the PDF
   int _totalPages = 0;
