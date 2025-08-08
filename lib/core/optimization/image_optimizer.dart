@@ -8,40 +8,40 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../services/performance_service.dart';
 
 /// Image loading optimization service
-/// 
+///
 /// Provides intelligent image caching, compression, and loading
 /// optimizations for better app performance and memory usage.
 class ImageOptimizer {
   static ImageOptimizer? _instance;
   static ImageOptimizer get instance => _instance ??= ImageOptimizer._();
-  
+
   ImageOptimizer._();
-  
+
   // Image cache configuration
   static const int _maxCacheSize = 100;
   static const int _maxCacheSizeBytes = 50 * 1024 * 1024; // 50MB
-  
+
   // Image compression settings
   static const int _defaultQuality = 85;
-  
+
   /// Initialize image optimizer
   void initialize() {
     _configureImageCache();
     _configureCachedNetworkImage();
   }
-  
+
   /// Configure Flutter's image cache
   void _configureImageCache() {
     PaintingBinding.instance.imageCache.maximumSize = _maxCacheSize;
     PaintingBinding.instance.imageCache.maximumSizeBytes = _maxCacheSizeBytes;
   }
-  
+
   /// Configure cached network image settings
   void _configureCachedNetworkImage() {
     // Configure global cache settings for CachedNetworkImage
     // This would be done in the CachedNetworkImage configuration
   }
-  
+
   /// Create optimized image widget
   Widget createOptimizedImage({
     required String imageUrl,
@@ -64,7 +64,7 @@ class ImageOptimizer {
       enableDiskCache: enableDiskCache,
     );
   }
-  
+
   /// Preload images for better performance
   Future<void> preloadImages(
     BuildContext context,
@@ -72,7 +72,7 @@ class ImageOptimizer {
     ImageSize size = ImageSize.medium,
   }) async {
     PerformanceService.instance.startTiming('image_preload');
-    
+
     try {
       final preloadFutures = imageUrls.map((url) {
         return precacheImage(
@@ -80,15 +80,14 @@ class ImageOptimizer {
           context,
         );
       });
-      
+
       await Future.wait(preloadFutures);
-      
+
       PerformanceService.instance.stopTiming('image_preload', metadata: {
         'image_count': imageUrls.length,
         'size': size.name,
         'success': true,
       });
-      
     } catch (error) {
       PerformanceService.instance.stopTiming('image_preload', metadata: {
         'image_count': imageUrls.length,
@@ -98,7 +97,7 @@ class ImageOptimizer {
       });
     }
   }
-  
+
   /// Create optimized image provider
   ImageProvider _createImageProvider(String imageUrl, ImageSize size) {
     if (imageUrl.startsWith('http')) {
@@ -110,7 +109,7 @@ class ImageOptimizer {
       return AssetImage(imageUrl);
     }
   }
-  
+
   /// Compress image bytes
   Future<Uint8List> compressImage(
     Uint8List imageBytes, {
@@ -119,32 +118,31 @@ class ImageOptimizer {
     int? maxHeight,
   }) async {
     PerformanceService.instance.startTiming('image_compression');
-    
+
     try {
       final codec = await ui.instantiateImageCodec(
         imageBytes,
         targetWidth: maxWidth,
         targetHeight: maxHeight,
       );
-      
+
       final frame = await codec.getNextFrame();
       final image = frame.image;
-      
+
       final byteData = await image.toByteData(
         format: ui.ImageByteFormat.png,
       );
-      
+
       final compressedBytes = byteData!.buffer.asUint8List();
-      
+
       PerformanceService.instance.stopTiming('image_compression', metadata: {
         'original_size': imageBytes.length,
         'compressed_size': compressedBytes.length,
         'compression_ratio': (1 - compressedBytes.length / imageBytes.length),
         'quality': quality,
       });
-      
+
       return compressedBytes;
-      
     } catch (error) {
       PerformanceService.instance.stopTiming('image_compression', metadata: {
         'error': error.toString(),
@@ -152,11 +150,11 @@ class ImageOptimizer {
       rethrow;
     }
   }
-  
+
   /// Clear image cache
   void clearImageCache() {
     PaintingBinding.instance.imageCache.clear();
-    
+
     PerformanceService.instance.recordMetric(PerformanceMetric(
       name: 'image_cache_cleared',
       value: 1,
@@ -165,11 +163,11 @@ class ImageOptimizer {
       metadata: {},
     ));
   }
-  
+
   /// Get image cache statistics
   ImageCacheStatistics getImageCacheStatistics() {
     final cache = PaintingBinding.instance.imageCache;
-    
+
     return ImageCacheStatistics(
       currentSize: cache.currentSize,
       maxSize: cache.maximumSize,
@@ -191,7 +189,7 @@ class OptimizedImageWidget extends StatefulWidget {
   final ImageSize size;
   final bool enableMemoryCache;
   final bool enableDiskCache;
-  
+
   const OptimizedImageWidget({
     super.key,
     required this.imageUrl,
@@ -203,7 +201,7 @@ class OptimizedImageWidget extends StatefulWidget {
     this.enableMemoryCache = true,
     this.enableDiskCache = true,
   });
-  
+
   @override
   State<OptimizedImageWidget> createState() => _OptimizedImageWidgetState();
 }
@@ -217,7 +215,7 @@ class _OptimizedImageWidgetState extends State<OptimizedImageWidget> {
       return _buildAssetImage();
     }
   }
-  
+
   Widget _buildNetworkImage() {
     return CachedNetworkImage(
       imageUrl: widget.imageUrl,
@@ -227,23 +225,23 @@ class _OptimizedImageWidgetState extends State<OptimizedImageWidget> {
       cacheKey: '${widget.imageUrl}_${widget.size.name}',
       memCacheWidth: _getCacheWidth(),
       memCacheHeight: _getCacheHeight(),
-      
+
       // Performance optimizations
       fadeInDuration: const Duration(milliseconds: 200),
       fadeOutDuration: const Duration(milliseconds: 200),
-      
+
       // Placeholder while loading
       placeholder: (context, url) {
         _recordImageEvent('loading');
         return _buildPlaceholder();
       },
-      
+
       // Error widget
       errorWidget: (context, url, error) {
         _recordImageEvent('error', error: error.toString());
         return _buildErrorWidget();
       },
-      
+
       // Success callback
       imageBuilder: (context, imageProvider) {
         _recordImageEvent('loaded');
@@ -256,7 +254,7 @@ class _OptimizedImageWidgetState extends State<OptimizedImageWidget> {
       },
     );
   }
-  
+
   Widget _buildAssetImage() {
     return Image.asset(
       widget.imageUrl,
@@ -279,12 +277,12 @@ class _OptimizedImageWidgetState extends State<OptimizedImageWidget> {
       },
     );
   }
-  
+
   Widget _buildPlaceholder() {
     if (widget.placeholder != null) {
       return Text(widget.placeholder!);
     }
-    
+
     return Container(
       width: widget.width,
       height: widget.height,
@@ -301,7 +299,7 @@ class _OptimizedImageWidgetState extends State<OptimizedImageWidget> {
       ),
     );
   }
-  
+
   Widget _buildErrorWidget() {
     return Container(
       width: widget.width,
@@ -320,17 +318,17 @@ class _OptimizedImageWidgetState extends State<OptimizedImageWidget> {
       ),
     );
   }
-  
+
   int? _getCacheWidth() {
     if (widget.width == null) return null;
     return (widget.width! * MediaQuery.of(context).devicePixelRatio).round();
   }
-  
+
   int? _getCacheHeight() {
     if (widget.height == null) return null;
     return (widget.height! * MediaQuery.of(context).devicePixelRatio).round();
   }
-  
+
   void _recordImageEvent(String event, {String? error}) {
     PerformanceService.instance.recordMetric(PerformanceMetric(
       name: 'image_$event',
@@ -355,7 +353,7 @@ enum ImageSize {
   medium(500),
   large(800),
   original(0);
-  
+
   const ImageSize(this.maxDimension);
   final int maxDimension;
 }
@@ -368,7 +366,7 @@ class ImageCacheStatistics {
   final int maxSizeBytes;
   final int liveImageCount;
   final int pendingImageCount;
-  
+
   const ImageCacheStatistics({
     required this.currentSize,
     required this.maxSize,
@@ -377,13 +375,14 @@ class ImageCacheStatistics {
     required this.liveImageCount,
     required this.pendingImageCount,
   });
-  
-  double get cacheUsagePercentage => maxSize > 0 ? (currentSize / maxSize) * 100 : 0;
-  
+
+  double get cacheUsagePercentage =>
+      maxSize > 0 ? (currentSize / maxSize) * 100 : 0;
+
   double get memorySizeMB => currentSizeBytes / (1024 * 1024);
-  
+
   double get maxMemorySizeMB => maxSizeBytes / (1024 * 1024);
-  
+
   @override
   String toString() {
     return '''

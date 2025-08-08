@@ -1,13 +1,13 @@
 import '../constants/api_constants.dart';
 
 /// API endpoint URL builder and management
-/// 
+///
 /// Provides utility methods to build complete API URLs
 /// for different book sources and handle endpoint configuration.
 class ApiEndpoints {
   // Private constructor to prevent instantiation
   ApiEndpoints._();
-  
+
   /// Helper method to build complete URLs with query parameters
   static String _buildUrl(
     String baseUrl,
@@ -21,7 +21,7 @@ class ApiEndpoints {
     });
     return newUri.toString();
   }
-  
+
   /// Validate if a URL is properly formatted
   static bool isValidUrl(String url) {
     try {
@@ -31,7 +31,7 @@ class ApiEndpoints {
       return false;
     }
   }
-  
+
   /// Extract domain from URL
   static String? getDomain(String url) {
     try {
@@ -41,7 +41,7 @@ class ApiEndpoints {
       return null;
     }
   }
-  
+
   /// Check if URL is HTTPS
   static bool isSecureUrl(String url) {
     try {
@@ -56,7 +56,7 @@ class ApiEndpoints {
 /// Project Gutenberg API endpoints
 class ProjectGutenbergEndpoints {
   static String get baseUrl => ApiConstants.projectGutenbergBaseUrl;
-  
+
   /// Build search URL
   static String search({
     required String query,
@@ -68,38 +68,37 @@ class ProjectGutenbergEndpoints {
       ApiConstants.queryParamFormat: format,
       ApiConstants.queryParamLimit: limit.toString(),
     };
-    
+
     return ApiEndpoints._buildUrl(
       baseUrl,
       ApiConstants.projectGutenbergSearch,
       params,
     );
   }
-  
+
   /// Build EPUB download URL
   static String epubDownload(String bookId) {
-    return baseUrl + 
-           ApiConstants.projectGutenbergEpub.replaceAll('{id}', bookId);
+    return baseUrl +
+        ApiConstants.projectGutenbergEpub.replaceAll('{id}', bookId);
   }
-  
+
   /// Build PDF download URL
   static String pdfDownload(String bookId) {
-    return baseUrl + 
-           ApiConstants.projectGutenbergPdf.replaceAll('{id}', bookId);
+    return baseUrl +
+        ApiConstants.projectGutenbergPdf.replaceAll('{id}', bookId);
   }
-  
+
   /// Build text download URL
   static String textDownload(String bookId) {
-    return baseUrl + 
-           ApiConstants.projectGutenbergText
-               .replaceAll('{id}', bookId);
+    return baseUrl +
+        ApiConstants.projectGutenbergText.replaceAll('{id}', bookId);
   }
 }
 
 /// Internet Archive API endpoints
 class InternetArchiveEndpoints {
   static String get baseUrl => ApiConstants.internetArchiveBaseUrl;
-  
+
   /// Build advanced search URL
   static String search({
     required String query,
@@ -113,34 +112,34 @@ class InternetArchiveEndpoints {
       'rows': rows.toString(),
       'page': page.toString(),
     };
-    
+
     return ApiEndpoints._buildUrl(
       baseUrl,
       ApiConstants.internetArchiveSearch,
       params,
     );
   }
-  
+
   /// Build metadata URL
   static String metadata(String identifier) {
-    return baseUrl + 
-           ApiConstants.internetArchiveMetadata
-               .replaceAll('{identifier}', identifier);
+    return baseUrl +
+        ApiConstants.internetArchiveMetadata
+            .replaceAll('{identifier}', identifier);
   }
-  
+
   /// Build download URL
   static String download(String identifier, String filename) {
-    return baseUrl + 
-           ApiConstants.internetArchiveDownload
-               .replaceAll('{identifier}', identifier)
-               .replaceAll('{filename}', filename);
+    return baseUrl +
+        ApiConstants.internetArchiveDownload
+            .replaceAll('{identifier}', identifier)
+            .replaceAll('{filename}', filename);
   }
 }
 
 /// OpenLibrary API endpoints
 class OpenLibraryEndpoints {
   static String get baseUrl => ApiConstants.openlibraryBaseUrl;
-  
+
   /// Build search URL
   static String search({
     required String query,
@@ -152,20 +151,20 @@ class OpenLibraryEndpoints {
       ApiConstants.queryParamLimit: limit.toString(),
       ApiConstants.queryParamOffset: offset.toString(),
     };
-    
+
     return ApiEndpoints._buildUrl(
       baseUrl,
       ApiConstants.openlibrarySearch,
       params,
     );
   }
-  
+
   /// Build works URL
   static String works(String workId) {
-    return baseUrl + 
-           ApiConstants.openlibraryWorks.replaceAll('{work_id}', workId);
+    return baseUrl +
+        ApiConstants.openlibraryWorks.replaceAll('{work_id}', workId);
   }
-  
+
   /// Build cover image URL
   static String coverImage({
     required String coverId,

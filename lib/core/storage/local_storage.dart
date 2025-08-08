@@ -7,20 +7,20 @@ import '../constants/storage_constants.dart';
 import '../errors/exceptions.dart' as app_exceptions;
 
 /// Local storage management and file operations
-/// 
+///
 /// Handles file system operations for the application including
 /// creating directories, managing file paths, and storage cleanup.
 class LocalStorage {
   static LocalStorage? _instance;
   static LocalStorage get instance => _instance ??= LocalStorage._();
-  
+
   String? _documentsPath;
   String? _appSupportPath;
   String? _cachePath;
   String? _tempPath;
-  
+
   LocalStorage._();
-  
+
   /// Initialize storage paths
   Future<void> initialize() async {
     try {
@@ -28,22 +28,21 @@ class LocalStorage {
       final appSupportDir = await getApplicationSupportDirectory();
       final cacheDir = await getTemporaryDirectory();
       final tempDir = await getTemporaryDirectory();
-      
+
       _documentsPath = documentsDir.path;
       _appSupportPath = appSupportDir.path;
       _cachePath = cacheDir.path;
       _tempPath = tempDir.path;
-      
+
       // Create required directories
       await _createRequiredDirectories();
-      
     } catch (e) {
       throw app_exceptions.StorageException(
         'Failed to initialize local storage: ${e.toString()}',
       );
     }
   }
-  
+
   /// Create required application directories
   Future<void> _createRequiredDirectories() async {
     final requiredDirs = [
@@ -53,7 +52,7 @@ class LocalStorage {
       cacheDirectory,
       logsDirectory,
     ];
-    
+
     for (final dir in requiredDirs) {
       final directory = Directory(dir);
       if (!await directory.exists()) {
@@ -61,49 +60,49 @@ class LocalStorage {
       }
     }
   }
-  
+
   /// Get books storage directory
   String get booksDirectory {
     _ensureInitialized();
     return path.join(_documentsPath!, StorageConstants.dirBooks);
   }
-  
+
   /// Get covers storage directory
   String get coversDirectory {
     _ensureInitialized();
     return path.join(_documentsPath!, StorageConstants.dirCovers);
   }
-  
+
   /// Get temporary files directory
   String get tempDirectory {
     _ensureInitialized();
     return path.join(_tempPath!, StorageConstants.dirTemp);
   }
-  
+
   /// Get cache directory
   String get cacheDirectory {
     _ensureInitialized();
     return path.join(_cachePath!, StorageConstants.dirCache);
   }
-  
+
   /// Get logs directory
   String get logsDirectory {
     _ensureInitialized();
     return path.join(_appSupportPath!, StorageConstants.dirLogs);
   }
-  
+
   /// Get documents directory path
   String get documentsPath {
     _ensureInitialized();
     return _documentsPath!;
   }
-  
+
   /// Get application support directory path
   String get appSupportPath {
     _ensureInitialized();
     return _appSupportPath!;
   }
-  
+
   /// Generate book file path
   String getBookFilePath(String bookId, String format) {
     final filename = StorageConstants.patternBookFile
@@ -111,14 +110,14 @@ class LocalStorage {
         .replaceAll('{format}', format);
     return path.join(booksDirectory, filename);
   }
-  
+
   /// Generate cover file path
   String getCoverFilePath(String bookId) {
-    final filename = StorageConstants.patternCoverFile
-        .replaceAll('{book_id}', bookId);
+    final filename =
+        StorageConstants.patternCoverFile.replaceAll('{book_id}', bookId);
     return path.join(coversDirectory, filename);
   }
-  
+
   /// Generate temporary file path
   String getTempFilePath(String filename) {
     final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
@@ -127,7 +126,7 @@ class LocalStorage {
         .replaceAll('{filename}', filename);
     return path.join(tempDirectory, tempFilename);
   }
-  
+
   /// Check if file exists
   Future<bool> fileExists(String filePath) async {
     try {
@@ -137,7 +136,7 @@ class LocalStorage {
       return false;
     }
   }
-  
+
   /// Get file size in bytes
   Future<int> getFileSize(String filePath) async {
     try {
@@ -150,7 +149,7 @@ class LocalStorage {
       return 0;
     }
   }
-  
+
   /// Delete file
   Future<bool> deleteFile(String filePath) async {
     try {
@@ -167,7 +166,7 @@ class LocalStorage {
       );
     }
   }
-  
+
   /// Move file from source to destination
   Future<bool> moveFile(String sourcePath, String destinationPath) async {
     try {
@@ -178,7 +177,7 @@ class LocalStorage {
         if (!await destinationDir.exists()) {
           await destinationDir.create(recursive: true);
         }
-        
+
         await sourceFile.rename(destinationPath);
         return true;
       }
@@ -190,7 +189,7 @@ class LocalStorage {
       );
     }
   }
-  
+
   /// Copy file from source to destination
   Future<bool> copyFile(String sourcePath, String destinationPath) async {
     try {
@@ -201,7 +200,7 @@ class LocalStorage {
         if (!await destinationDir.exists()) {
           await destinationDir.create(recursive: true);
         }
-        
+
         await sourceFile.copy(destinationPath);
         return true;
       }
@@ -213,13 +212,13 @@ class LocalStorage {
       );
     }
   }
-  
+
   /// Get directory size in bytes
   Future<int> getDirectorySize(String directoryPath) async {
     try {
       final directory = Directory(directoryPath);
       if (!await directory.exists()) return 0;
-      
+
       int totalSize = 0;
       await for (final entity in directory.list(recursive: true)) {
         if (entity is File) {
@@ -231,7 +230,7 @@ class LocalStorage {
       return 0;
     }
   }
-  
+
   /// Clean up temporary files older than specified duration
   Future<void> cleanupTempFiles({
     Duration retention = StorageConstants.tempFileRetention,
@@ -239,9 +238,9 @@ class LocalStorage {
     try {
       final tempDir = Directory(tempDirectory);
       if (!await tempDir.exists()) return;
-      
+
       final cutoffDate = DateTime.now().subtract(retention);
-      
+
       await for (final entity in tempDir.list()) {
         if (entity is File) {
           final stat = await entity.stat();
@@ -256,7 +255,7 @@ class LocalStorage {
       );
     }
   }
-  
+
   /// Clean up cache files older than specified duration
   Future<void> cleanupCacheFiles({
     Duration retention = StorageConstants.cacheFileRetention,
@@ -264,9 +263,9 @@ class LocalStorage {
     try {
       final cacheDir = Directory(cacheDirectory);
       if (!await cacheDir.exists()) return;
-      
+
       final cutoffDate = DateTime.now().subtract(retention);
-      
+
       await for (final entity in cacheDir.list()) {
         if (entity is File) {
           final stat = await entity.stat();
@@ -281,7 +280,7 @@ class LocalStorage {
       );
     }
   }
-  
+
   /// Get available storage space in bytes
   Future<int> getAvailableSpace() async {
     try {
@@ -292,13 +291,13 @@ class LocalStorage {
       return 0;
     }
   }
-  
+
   /// Check if there's enough space for a file
   Future<bool> hasEnoughSpace(int requiredBytes) async {
     final availableSpace = await getAvailableSpace();
     return availableSpace >= requiredBytes;
   }
-  
+
   /// Ensure storage is initialized
   void _ensureInitialized() {
     if (_documentsPath == null) {
@@ -307,7 +306,7 @@ class LocalStorage {
       );
     }
   }
-  
+
   /// Get storage usage statistics
   Future<StorageStats> getStorageStats() async {
     final booksSize = await getDirectorySize(booksDirectory);
@@ -315,7 +314,7 @@ class LocalStorage {
     final cacheSize = await getDirectorySize(cacheDirectory);
     final tempSize = await getDirectorySize(tempDirectory);
     final logsSize = await getDirectorySize(logsDirectory);
-    
+
     return StorageStats(
       booksSize: booksSize,
       coversSize: coversSize,
@@ -335,7 +334,7 @@ class StorageStats {
   final int tempSize;
   final int logsSize;
   final int totalSize;
-  
+
   const StorageStats({
     required this.booksSize,
     required this.coversSize,
@@ -344,24 +343,25 @@ class StorageStats {
     required this.logsSize,
     required this.totalSize,
   });
-  
+
   /// Format size in human-readable format
   String formatSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
-  
+
   /// Get formatted total size
   String get formattedTotalSize => formatSize(totalSize);
-  
+
   /// Get formatted books size
   String get formattedBooksSize => formatSize(booksSize);
-  
+
   /// Get formatted covers size
   String get formattedCoversSize => formatSize(coversSize);
-  
+
   /// Get formatted cache size
   String get formattedCacheSize => formatSize(cacheSize);
 }

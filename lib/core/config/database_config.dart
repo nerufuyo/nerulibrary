@@ -8,29 +8,29 @@ import '../constants/storage_constants.dart';
 import '../errors/exceptions.dart' as app_exceptions;
 
 /// Database configuration and initialization
-/// 
+///
 /// Handles SQLite database setup, migrations, and connection management.
 /// Provides centralized database access with proper error handling.
 class DatabaseConfig {
   static DatabaseConfig? _instance;
   static DatabaseConfig get instance => _instance ??= DatabaseConfig._();
-  
+
   Database? _database;
-  
+
   DatabaseConfig._();
-  
+
   /// Get the database instance, initializing if necessary
   Future<Database> get database async {
     _database ??= await _initializeDatabase();
     return _database!;
   }
-  
+
   /// Initialize the database with proper schema
   Future<Database> _initializeDatabase() async {
     try {
       final documentsDirectory = await getApplicationDocumentsDirectory();
       final path = join(documentsDirectory.path, StorageConstants.databaseName);
-      
+
       return await openDatabase(
         path,
         version: StorageConstants.databaseVersion,
@@ -39,26 +39,27 @@ class DatabaseConfig {
         onConfigure: _configureDatabase,
       );
     } catch (e) {
-      throw app_exceptions.DatabaseException('Failed to initialize database: ${e.toString()}');
+      throw app_exceptions.DatabaseException(
+          'Failed to initialize database: ${e.toString()}');
     }
   }
-  
+
   /// Configure database settings
   Future<void> _configureDatabase(Database db) async {
     // Enable foreign key constraints
     await db.execute('PRAGMA foreign_keys = ON');
-    
+
     // Configure performance settings
     await db.execute('PRAGMA journal_mode = WAL');
     await db.execute('PRAGMA synchronous = NORMAL');
     await db.execute('PRAGMA cache_size = 10000');
     await db.execute('PRAGMA temp_store = MEMORY');
   }
-  
+
   /// Create database schema
   Future<void> _createDatabase(Database db, int version) async {
     final batch = db.batch();
-    
+
     // Books table
     batch.execute('''
       CREATE TABLE ${StorageConstants.tableBooks} (
@@ -84,7 +85,7 @@ class DatabaseConfig {
         last_opened_at INTEGER
       )
     ''');
-    
+
     // Authors table
     batch.execute('''
       CREATE TABLE ${StorageConstants.tableAuthors} (
@@ -99,7 +100,7 @@ class DatabaseConfig {
         updated_at INTEGER NOT NULL
       )
     ''');
-    
+
     // Book-Author relationship table
     batch.execute('''
       CREATE TABLE book_authors (
@@ -111,7 +112,7 @@ class DatabaseConfig {
         FOREIGN KEY (author_id) REFERENCES ${StorageConstants.tableAuthors}(id) ON DELETE CASCADE
       )
     ''');
-    
+
     // Categories table
     batch.execute('''
       CREATE TABLE ${StorageConstants.tableCategories} (
@@ -123,7 +124,7 @@ class DatabaseConfig {
         FOREIGN KEY (parent_id) REFERENCES ${StorageConstants.tableCategories}(id)
       )
     ''');
-    
+
     // Book-Category relationship table
     batch.execute('''
       CREATE TABLE book_categories (
@@ -134,7 +135,7 @@ class DatabaseConfig {
         FOREIGN KEY (category_id) REFERENCES ${StorageConstants.tableCategories}(id) ON DELETE CASCADE
       )
     ''');
-    
+
     // Reading progress table
     batch.execute('''
       CREATE TABLE ${StorageConstants.tableReadingProgress} (
@@ -151,7 +152,7 @@ class DatabaseConfig {
         FOREIGN KEY (book_id) REFERENCES ${StorageConstants.tableBooks}(id) ON DELETE CASCADE
       )
     ''');
-    
+
     // Bookmarks table
     batch.execute('''
       CREATE TABLE ${StorageConstants.tableBookmarks} (
@@ -167,7 +168,7 @@ class DatabaseConfig {
         FOREIGN KEY (book_id) REFERENCES ${StorageConstants.tableBooks}(id) ON DELETE CASCADE
       )
     ''');
-    
+
     // Notes table
     batch.execute('''
       CREATE TABLE ${StorageConstants.tableNotes} (
@@ -185,7 +186,7 @@ class DatabaseConfig {
         FOREIGN KEY (book_id) REFERENCES ${StorageConstants.tableBooks}(id) ON DELETE CASCADE
       )
     ''');
-    
+
     // Collections table
     batch.execute('''
       CREATE TABLE ${StorageConstants.tableCollections} (
@@ -198,7 +199,7 @@ class DatabaseConfig {
         updated_at INTEGER NOT NULL
       )
     ''');
-    
+
     // Collection-Book relationship table
     batch.execute('''
       CREATE TABLE collection_books (
@@ -210,7 +211,7 @@ class DatabaseConfig {
         FOREIGN KEY (book_id) REFERENCES ${StorageConstants.tableBooks}(id) ON DELETE CASCADE
       )
     ''');
-    
+
     // Downloads table
     batch.execute('''
       CREATE TABLE ${StorageConstants.tableDownloads} (
@@ -229,7 +230,7 @@ class DatabaseConfig {
         FOREIGN KEY (book_id) REFERENCES ${StorageConstants.tableBooks}(id) ON DELETE CASCADE
       )
     ''');
-    
+
     // Search history table
     batch.execute('''
       CREATE TABLE ${StorageConstants.tableSearchHistory} (
@@ -241,41 +242,55 @@ class DatabaseConfig {
         created_at INTEGER NOT NULL
       )
     ''');
-    
+
     // Create indexes for better performance
     _createIndexes(batch);
-    
+
     await batch.commit();
   }
-  
+
   /// Create database indexes
   void _createIndexes(Batch batch) {
     // Books indexes
-    batch.execute('CREATE INDEX idx_books_title ON ${StorageConstants.tableBooks}(title)');
-    batch.execute('CREATE INDEX idx_books_format ON ${StorageConstants.tableBooks}(format)');
-    batch.execute('CREATE INDEX idx_books_source ON ${StorageConstants.tableBooks}(source)');
-    batch.execute('CREATE INDEX idx_books_created_at ON ${StorageConstants.tableBooks}(created_at)');
-    batch.execute('CREATE INDEX idx_books_last_opened ON ${StorageConstants.tableBooks}(last_opened_at)');
-    
+    batch.execute(
+        'CREATE INDEX idx_books_title ON ${StorageConstants.tableBooks}(title)');
+    batch.execute(
+        'CREATE INDEX idx_books_format ON ${StorageConstants.tableBooks}(format)');
+    batch.execute(
+        'CREATE INDEX idx_books_source ON ${StorageConstants.tableBooks}(source)');
+    batch.execute(
+        'CREATE INDEX idx_books_created_at ON ${StorageConstants.tableBooks}(created_at)');
+    batch.execute(
+        'CREATE INDEX idx_books_last_opened ON ${StorageConstants.tableBooks}(last_opened_at)');
+
     // Authors indexes
-    batch.execute('CREATE INDEX idx_authors_name ON ${StorageConstants.tableAuthors}(name)');
-    
+    batch.execute(
+        'CREATE INDEX idx_authors_name ON ${StorageConstants.tableAuthors}(name)');
+
     // Reading progress indexes
-    batch.execute('CREATE INDEX idx_reading_progress_book ON ${StorageConstants.tableReadingProgress}(book_id)');
-    batch.execute('CREATE INDEX idx_reading_progress_user ON ${StorageConstants.tableReadingProgress}(user_id)');
-    
+    batch.execute(
+        'CREATE INDEX idx_reading_progress_book ON ${StorageConstants.tableReadingProgress}(book_id)');
+    batch.execute(
+        'CREATE INDEX idx_reading_progress_user ON ${StorageConstants.tableReadingProgress}(user_id)');
+
     // Bookmarks indexes
-    batch.execute('CREATE INDEX idx_bookmarks_book ON ${StorageConstants.tableBookmarks}(book_id)');
-    batch.execute('CREATE INDEX idx_bookmarks_user ON ${StorageConstants.tableBookmarks}(user_id)');
-    
+    batch.execute(
+        'CREATE INDEX idx_bookmarks_book ON ${StorageConstants.tableBookmarks}(book_id)');
+    batch.execute(
+        'CREATE INDEX idx_bookmarks_user ON ${StorageConstants.tableBookmarks}(user_id)');
+
     // Notes indexes
-    batch.execute('CREATE INDEX idx_notes_book ON ${StorageConstants.tableNotes}(book_id)');
-    batch.execute('CREATE INDEX idx_notes_user ON ${StorageConstants.tableNotes}(user_id)');
-    
+    batch.execute(
+        'CREATE INDEX idx_notes_book ON ${StorageConstants.tableNotes}(book_id)');
+    batch.execute(
+        'CREATE INDEX idx_notes_user ON ${StorageConstants.tableNotes}(user_id)');
+
     // Downloads indexes
-    batch.execute('CREATE INDEX idx_downloads_status ON ${StorageConstants.tableDownloads}(status)');
-    batch.execute('CREATE INDEX idx_downloads_book ON ${StorageConstants.tableDownloads}(book_id)');
-    
+    batch.execute(
+        'CREATE INDEX idx_downloads_status ON ${StorageConstants.tableDownloads}(status)');
+    batch.execute(
+        'CREATE INDEX idx_downloads_book ON ${StorageConstants.tableDownloads}(book_id)');
+
     // Full-text search index for books
     batch.execute('''
       CREATE VIRTUAL TABLE books_fts USING fts5(
@@ -285,16 +300,17 @@ class DatabaseConfig {
       )
     ''');
   }
-  
+
   /// Handle database upgrades
-  Future<void> _upgradeDatabase(Database db, int oldVersion, int newVersion) async {
+  Future<void> _upgradeDatabase(
+      Database db, int oldVersion, int newVersion) async {
     // Handle version upgrades here
     // For now, we only have version 1, so no upgrades needed
     if (oldVersion < newVersion) {
       // Future migrations will be implemented here
     }
   }
-  
+
   /// Close the database connection
   Future<void> close() async {
     if (_database != null) {
@@ -302,7 +318,7 @@ class DatabaseConfig {
       _database = null;
     }
   }
-  
+
   /// Delete the database file (for testing or reset)
   Future<void> deleteDatabase() async {
     try {
@@ -314,10 +330,11 @@ class DatabaseConfig {
         await file.delete();
       }
     } catch (e) {
-      throw app_exceptions.DatabaseException('Failed to delete database: ${e.toString()}');
+      throw app_exceptions.DatabaseException(
+          'Failed to delete database: ${e.toString()}');
     }
   }
-  
+
   /// Get database file size in bytes
   Future<int> getDatabaseSize() async {
     try {

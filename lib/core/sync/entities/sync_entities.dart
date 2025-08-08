@@ -1,28 +1,28 @@
 import 'package:equatable/equatable.dart';
 
 /// Synchronizable entity interface
-/// 
+///
 /// Defines common synchronization properties that all syncable entities
 /// must implement for cloud synchronization functionality.
 abstract class Syncable {
   /// Unique identifier for the entity
   String get id;
-  
+
   /// Last modified timestamp for conflict resolution
   DateTime get updatedAt;
-  
+
   /// Whether this entity is synchronized with the cloud
   bool get isSynced;
-  
+
   /// Whether this entity has pending changes to sync
   bool get hasChanges;
-  
+
   /// User ID this entity belongs to (null for shared/public data)
   String? get userId;
-  
+
   /// Convert entity to syncable JSON format
   Map<String, dynamic> toSyncJson();
-  
+
   /// Create entity from synced JSON data
   // Note: This should be implemented as a static factory method in each entity
 }
@@ -248,8 +248,9 @@ class SyncConflict extends Equatable {
       remoteData: json['remote_data'] as Map<String, dynamic>,
       localUpdatedAt: DateTime.parse(json['local_updated_at'] as String),
       remoteUpdatedAt: DateTime.parse(json['remote_updated_at'] as String),
-      conflictDetectedAt: DateTime.parse(json['conflict_detected_at'] as String),
-      resolution: json['resolution'] != null 
+      conflictDetectedAt:
+          DateTime.parse(json['conflict_detected_at'] as String),
+      resolution: json['resolution'] != null
           ? ConflictResolution.fromString(json['resolution'] as String)
           : null,
     );
@@ -344,13 +345,13 @@ class SyncSession extends Equatable {
     required this.startedAt,
     this.completedAt,
     required this.status,
-  }) : totalItems = 0,
-       processedItems = 0,
-       successfulItems = 0,
-       failedItems = 0,
-       conflictItems = 0,
-       errors = const [],
-       metadata = const {};
+  })  : totalItems = 0,
+        processedItems = 0,
+        successfulItems = 0,
+        failedItems = 0,
+        conflictItems = 0,
+        errors = const [],
+        metadata = const {};
 
   /// Calculate sync progress (0.0 to 1.0)
   double get progress {
@@ -365,7 +366,10 @@ class SyncSession extends Equatable {
   }
 
   /// Check if sync completed successfully
-  bool get isSuccessful => status == SyncSessionStatus.completed && failedItems == 0 && conflictItems == 0;
+  bool get isSuccessful =>
+      status == SyncSessionStatus.completed &&
+      failedItems == 0 &&
+      conflictItems == 0;
 
   /// Create a copy of SyncSession with updated fields
   SyncSession copyWith({

@@ -1,5 +1,5 @@
 /// File management specific exceptions
-/// 
+///
 /// Provides comprehensive error handling for file operations including
 /// downloads, storage management, and file integrity verification.
 class FileException implements Exception {
@@ -31,7 +31,8 @@ class DownloadException extends FileException {
   });
 
   @override
-  String toString() => 'DownloadException: $message${url != null ? ' (URL: $url)' : ''}';
+  String toString() =>
+      'DownloadException: $message${url != null ? ' (URL: $url)' : ''}';
 }
 
 /// Exception thrown when storage operations fail
@@ -48,7 +49,8 @@ class StorageException extends FileException {
   });
 
   @override
-  String toString() => 'StorageException: $message${path != null ? ' (Path: $path)' : ''}';
+  String toString() =>
+      'StorageException: $message${path != null ? ' (Path: $path)' : ''}';
 }
 
 /// Exception thrown when file permission operations fail

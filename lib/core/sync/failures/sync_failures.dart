@@ -7,12 +7,14 @@ abstract class SyncFailure extends Failure {
 
 /// Failed to establish connection to sync server
 class SyncConnectionFailure extends SyncFailure {
-  const SyncConnectionFailure({required super.message, super.code = 'SYNC_CONNECTION_FAILED'});
+  const SyncConnectionFailure(
+      {required super.message, super.code = 'SYNC_CONNECTION_FAILED'});
 }
 
 /// Authentication failed during sync
 class SyncAuthFailure extends SyncFailure {
-  const SyncAuthFailure({required super.message, super.code = 'SYNC_AUTH_FAILED'});
+  const SyncAuthFailure(
+      {required super.message, super.code = 'SYNC_AUTH_FAILED'});
 }
 
 /// Sync data conflict detected
@@ -32,27 +34,32 @@ class SyncConflictFailure extends SyncFailure {
 
 /// Sync operation timeout
 class SyncTimeoutFailure extends SyncFailure {
-  const SyncTimeoutFailure({required super.message, super.code = 'SYNC_TIMEOUT'});
+  const SyncTimeoutFailure(
+      {required super.message, super.code = 'SYNC_TIMEOUT'});
 }
 
 /// Invalid sync data format
 class SyncDataFailure extends SyncFailure {
-  const SyncDataFailure({required super.message, super.code = 'SYNC_DATA_INVALID'});
+  const SyncDataFailure(
+      {required super.message, super.code = 'SYNC_DATA_INVALID'});
 }
 
 /// Sync quota exceeded
 class SyncQuotaFailure extends SyncFailure {
-  const SyncQuotaFailure({required super.message, super.code = 'SYNC_QUOTA_EXCEEDED'});
+  const SyncQuotaFailure(
+      {required super.message, super.code = 'SYNC_QUOTA_EXCEEDED'});
 }
 
 /// Sync version mismatch
 class SyncVersionFailure extends SyncFailure {
-  const SyncVersionFailure({required super.message, super.code = 'SYNC_VERSION_MISMATCH'});
+  const SyncVersionFailure(
+      {required super.message, super.code = 'SYNC_VERSION_MISMATCH'});
 }
 
 /// Sync cancelled by user
 class SyncCancelledFailure extends SyncFailure {
-  const SyncCancelledFailure({required super.message, super.code = 'SYNC_CANCELLED'});
+  const SyncCancelledFailure(
+      {required super.message, super.code = 'SYNC_CANCELLED'});
 }
 
 /// Sync rate limit exceeded
@@ -68,12 +75,14 @@ class SyncRateLimitFailure extends SyncFailure {
 
 /// Sync permission denied
 class SyncPermissionFailure extends SyncFailure {
-  const SyncPermissionFailure({required super.message, super.code = 'SYNC_PERMISSION_DENIED'});
+  const SyncPermissionFailure(
+      {required super.message, super.code = 'SYNC_PERMISSION_DENIED'});
 }
 
 /// Sync storage failure
 class SyncStorageFailure extends SyncFailure {
-  const SyncStorageFailure({required super.message, super.code = 'SYNC_STORAGE_FAILED'});
+  const SyncStorageFailure(
+      {required super.message, super.code = 'SYNC_STORAGE_FAILED'});
 }
 
 /// Sync validation failure
