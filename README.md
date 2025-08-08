@@ -1,10 +1,10 @@
-# LiteraLib
+# nerulibrary
 
-A comprehensive digital library application built with Flutter that provides users with access to a vast collection of public domain books. LiteraLib combines modern reading experiences with intelligent library management, offering seamless synchronization across devices and an intuitive interface for book discovery and reading.
+A comprehensive digital library application built with Flutter that provides users with access to a vast collection of public domain books. nerulibrary combines modern reading experiences with intelligent library management, offering seamless synchronization across devices and an intuitive interface for book discovery and reading.
 
 ## Project Overview
 
-LiteraLib is designed to be a complete digital reading solution that aggregates content from multiple public domain sources including Project Gutenberg, Internet Archive, and OpenLibrary. The application focuses on providing users with a rich reading experience while maintaining high performance and reliability.
+nerulibrary is designed to be a complete digital reading solution that aggregates content from multiple public domain sources including Project Gutenberg, Internet Archive, and OpenLibrary. The application focuses on providing users with a rich reading experience while maintaining high performance and reliability.
 
 ### Key Features
 
@@ -91,7 +91,7 @@ lib/
 
 ## API Integration
 
-LiteraLib integrates with multiple public book APIs to provide comprehensive content access:
+nerulibrary integrates with multiple public book APIs to provide comprehensive content access:
 
 ### Primary Sources
 - **Project Gutenberg**: Public domain classics and literature
