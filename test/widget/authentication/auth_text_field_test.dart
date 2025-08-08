@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../lib/features/authentication/presentation/widgets/auth_text_field.dart';
+import 'package:nerulibrary/features/authentication/presentation/widgets/auth_text_field.dart';
 
 void main() {
   group('AuthTextField Widget Tests', () {

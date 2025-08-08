@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../../../../lib/core/storage/file_manager.dart';
+import 'package:nerulibrary/core/storage/file_manager.dart';
 
 void main() {
   group('FileManager', () {
@@ -20,7 +20,9 @@ void main() {
         expect(identical(instance1, instance2), isTrue);
       });
 
-      test('should maintain singleton behavior across different access patterns', () {
+      test(
+          'should maintain singleton behavior across different access patterns',
+          () {
         // Arrange & Act
         final directAccess = FileManager.instance;
         final assignedInstance = FileManager.instance;
@@ -36,7 +38,7 @@ void main() {
     group('File Validation', () {
       test('should validate supported book formats', () {
         // This tests internal validation logic without filesystem operations
-        
+
         // Valid formats should not throw during validation setup
         const validFormats = ['epub', 'pdf', 'mobi'];
         for (final format in validFormats) {
@@ -47,7 +49,7 @@ void main() {
 
       test('should handle file extension extraction', () {
         // This tests the utility methods for format handling
-        
+
         // Common book formats should have expected behavior
         const formats = ['epub', 'pdf', 'mobi', 'txt'];
         for (final format in formats) {
@@ -58,22 +60,26 @@ void main() {
     });
 
     group('File Operations API', () {
-      test('downloadFile method should exist and accept required parameters', () {
+      test('downloadFile method should exist and accept required parameters',
+          () {
         // Verify that the method signature exists
         expect(fileManager.downloadFile, isA<Function>());
       });
 
-      test('downloadBook method should exist and accept required parameters', () {
+      test('downloadBook method should exist and accept required parameters',
+          () {
         // Verify that the method signature exists
         expect(fileManager.downloadBook, isA<Function>());
       });
 
-      test('downloadCover method should exist and accept required parameters', () {
-        // Verify that the method signature exists  
+      test('downloadCover method should exist and accept required parameters',
+          () {
+        // Verify that the method signature exists
         expect(fileManager.downloadCover, isA<Function>());
       });
 
-      test('getFileInfo method should exist and accept required parameters', () {
+      test('getFileInfo method should exist and accept required parameters',
+          () {
         // Verify that the method signature exists
         expect(fileManager.getFileInfo, isA<Function>());
       });
@@ -83,7 +89,9 @@ void main() {
         expect(fileManager.deleteFile, isA<Function>());
       });
 
-      test('checkSpaceForDownload method should exist and accept required parameters', () {
+      test(
+          'checkSpaceForDownload method should exist and accept required parameters',
+          () {
         // Verify that the method signature exists
         expect(fileManager.checkSpaceForDownload, isA<Function>());
       });
@@ -109,8 +117,8 @@ void main() {
 
       test('should handle empty or invalid parameters', () {
         // Test parameter validation
-        expect(() => fileManager.downloadFile(url: '', fileName: ''), 
-               throwsA(isA<Exception>()));
+        expect(() => fileManager.downloadFile(url: '', fileName: ''),
+            throwsA(isA<Exception>()));
       });
     });
 
@@ -120,13 +128,14 @@ void main() {
         expect(() => fileManager.downloadFile, returnsNormally);
       });
 
-      test('downloadBook should require url, bookId, and format parameters', () {
+      test('downloadBook should require url, bookId, and format parameters',
+          () {
         // This verifies the method signature requirements
         expect(() => fileManager.downloadBook, returnsNormally);
       });
 
       test('downloadCover should require url and bookId parameters', () {
-        // This verifies the method signature requirements  
+        // This verifies the method signature requirements
         expect(() => fileManager.downloadCover, returnsNormally);
       });
     });

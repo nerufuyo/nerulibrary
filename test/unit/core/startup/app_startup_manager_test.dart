@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../../../../lib/core/startup/app_startup_manager.dart';
+import 'package:nerulibrary/core/startup/app_startup_manager.dart';
 
 void main() {
   // Initialize Flutter test binding
@@ -23,7 +23,9 @@ void main() {
         expect(identical(instance1, instance2), isTrue);
       });
 
-      test('should maintain singleton behavior across different access patterns', () {
+      test(
+          'should maintain singleton behavior across different access patterns',
+          () {
         // Arrange & Act
         final directAccess = AppStartupManager.instance;
         final assignedInstance = AppStartupManager.instance;
@@ -50,9 +52,11 @@ void main() {
         expect(initFuture, isA<Future<void>>());
       });
 
-      test('should throw StateError when accessing sharedPreferences before init', () {
+      test(
+          'should throw StateError when accessing sharedPreferences before init',
+          () {
         // Act & Assert
-        expect(() => appStartupManager.sharedPreferences, 
+        expect(() => appStartupManager.sharedPreferences,
             throwsA(isA<StateError>()));
       });
     });

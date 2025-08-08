@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dartz/dartz.dart';
-import '../../../../lib/core/services/file_permission_manager.dart';
-import '../../../../lib/core/errors/file_failures.dart';
+import 'package:nerulibrary/core/services/file_permission_manager.dart';
+import 'package:nerulibrary/core/errors/file_failures.dart';
 
 void main() {
   group('FilePermissionManager', () {
@@ -12,7 +12,8 @@ void main() {
     });
 
     group('Permission Check Methods', () {
-      test('hasStoragePermission should return Either<PermissionFailure, bool>', () {
+      test('hasStoragePermission should return Either<PermissionFailure, bool>',
+          () {
         // Arrange & Act
         final result = permissionManager.hasStoragePermission();
 
@@ -20,7 +21,9 @@ void main() {
         expect(result, isA<Future<Either<PermissionFailure, bool>>>());
       });
 
-      test('hasManageExternalStoragePermission should return Either<PermissionFailure, bool>', () {
+      test(
+          'hasManageExternalStoragePermission should return Either<PermissionFailure, bool>',
+          () {
         // Arrange & Act
         final result = permissionManager.hasManageExternalStoragePermission();
 
@@ -28,17 +31,22 @@ void main() {
         expect(result, isA<Future<Either<PermissionFailure, bool>>>());
       });
 
-      test('checkAllFilePermissions should return Either<PermissionFailure, Map<String, bool>>', () {
+      test(
+          'checkAllFilePermissions should return Either<PermissionFailure, Map<String, bool>>',
+          () {
         // Arrange & Act
         final result = permissionManager.checkAllFilePermissions();
 
         // Assert
-        expect(result, isA<Future<Either<PermissionFailure, Map<String, bool>>>>());
+        expect(result,
+            isA<Future<Either<PermissionFailure, Map<String, bool>>>>());
       });
     });
 
     group('Permission Request Methods', () {
-      test('requestStoragePermission should return Either<PermissionFailure, bool>', () {
+      test(
+          'requestStoragePermission should return Either<PermissionFailure, bool>',
+          () {
         // Arrange & Act
         final result = permissionManager.requestStoragePermission();
 
@@ -46,25 +54,33 @@ void main() {
         expect(result, isA<Future<Either<PermissionFailure, bool>>>());
       });
 
-      test('requestManageExternalStoragePermission should return Either<PermissionFailure, bool>', () {
+      test(
+          'requestManageExternalStoragePermission should return Either<PermissionFailure, bool>',
+          () {
         // Arrange & Act
-        final result = permissionManager.requestManageExternalStoragePermission();
+        final result =
+            permissionManager.requestManageExternalStoragePermission();
 
         // Assert
         expect(result, isA<Future<Either<PermissionFailure, bool>>>());
       });
 
-      test('requestAllFilePermissions should return Either<PermissionFailure, Map<String, bool>>', () {
+      test(
+          'requestAllFilePermissions should return Either<PermissionFailure, Map<String, bool>>',
+          () {
         // Arrange & Act
         final result = permissionManager.requestAllFilePermissions();
 
         // Assert
-        expect(result, isA<Future<Either<PermissionFailure, Map<String, bool>>>>());
+        expect(result,
+            isA<Future<Either<PermissionFailure, Map<String, bool>>>>());
       });
     });
 
     group('Permission Utility Methods', () {
-      test('ensureFilePermissions should return Either<PermissionFailure, bool>', () {
+      test(
+          'ensureFilePermissions should return Either<PermissionFailure, bool>',
+          () {
         // Arrange & Act
         final result = permissionManager.ensureFilePermissions();
 
@@ -76,11 +92,11 @@ void main() {
     group('Error Handling', () {
       test('should use Either pattern for error handling', () async {
         // This tests that the methods follow the Either pattern for error handling
-        
+
         // Test storage permission check
         final storageResult = await permissionManager.hasStoragePermission();
         expect(storageResult, isA<Either<PermissionFailure, bool>>());
-        
+
         // The result should be either a failure or success
         storageResult.fold(
           (failure) {
@@ -95,10 +111,11 @@ void main() {
 
       test('should handle permission check errors gracefully', () async {
         // Test that external storage permission check doesn't crash
-        final result = await permissionManager.hasManageExternalStoragePermission();
-        
+        final result =
+            await permissionManager.hasManageExternalStoragePermission();
+
         expect(result, isA<Either<PermissionFailure, bool>>());
-        
+
         result.fold(
           (failure) {
             expect(failure, isA<PermissionFailure>());
@@ -115,20 +132,27 @@ void main() {
       test('all permission methods should be callable', () {
         // Verify method signatures exist and are callable
         expect(() => permissionManager.hasStoragePermission(), returnsNormally);
-        expect(() => permissionManager.hasManageExternalStoragePermission(), returnsNormally);
-        expect(() => permissionManager.requestStoragePermission(), returnsNormally);
-        expect(() => permissionManager.requestManageExternalStoragePermission(), returnsNormally);
-        expect(() => permissionManager.checkAllFilePermissions(), returnsNormally);
-        expect(() => permissionManager.requestAllFilePermissions(), returnsNormally);
-        expect(() => permissionManager.ensureFilePermissions(), returnsNormally);
+        expect(() => permissionManager.hasManageExternalStoragePermission(),
+            returnsNormally);
+        expect(() => permissionManager.requestStoragePermission(),
+            returnsNormally);
+        expect(() => permissionManager.requestManageExternalStoragePermission(),
+            returnsNormally);
+        expect(
+            () => permissionManager.checkAllFilePermissions(), returnsNormally);
+        expect(() => permissionManager.requestAllFilePermissions(),
+            returnsNormally);
+        expect(
+            () => permissionManager.ensureFilePermissions(), returnsNormally);
       });
     });
 
     group('Return Type Validation', () {
-      test('checkAllFilePermissions should return map with expected keys', () async {
+      test('checkAllFilePermissions should return map with expected keys',
+          () async {
         // Test that the method returns the expected structure
         final result = await permissionManager.checkAllFilePermissions();
-        
+
         result.fold(
           (failure) {
             // If there's a failure, it should be a PermissionFailure
@@ -144,10 +168,11 @@ void main() {
         );
       });
 
-      test('requestAllFilePermissions should return map with expected keys', () async {
+      test('requestAllFilePermissions should return map with expected keys',
+          () async {
         // Test that the method returns the expected structure
         final result = await permissionManager.requestAllFilePermissions();
-        
+
         result.fold(
           (failure) {
             // If there's a failure, it should be a PermissionFailure
@@ -167,9 +192,9 @@ void main() {
       test('ensureFilePermissions should handle the complete flow', () async {
         // Test the complete permission flow
         final result = await permissionManager.ensureFilePermissions();
-        
+
         expect(result, isA<Either<PermissionFailure, bool>>());
-        
+
         result.fold(
           (failure) {
             // If there's a failure, it should provide meaningful information

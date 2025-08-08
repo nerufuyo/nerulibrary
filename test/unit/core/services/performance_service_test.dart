@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../../../../lib/core/services/performance_service.dart';
+import 'package:nerulibrary/core/services/performance_service.dart';
 
 void main() {
   // Initialize Flutter test binding
@@ -51,13 +51,15 @@ void main() {
 
       test('should handle multiple metric recordings', () {
         // Arrange
-        final metrics = List.generate(3, (index) => PerformanceMetric(
-          name: 'operation_$index',
-          value: (index * 100.0),
-          unit: 'ms',
-          timestamp: DateTime.now(),
-          metadata: {'index': index.toString()},
-        ));
+        final metrics = List.generate(
+            3,
+            (index) => PerformanceMetric(
+                  name: 'operation_$index',
+                  value: (index * 100.0),
+                  unit: 'ms',
+                  timestamp: DateTime.now(),
+                  metadata: {'index': index.toString()},
+                ));
 
         // Act
         for (final metric in metrics) {
@@ -66,7 +68,8 @@ void main() {
         final summary = performanceService.getPerformanceSummary();
 
         // Assert
-        expect(summary.recentMetrics.length, greaterThanOrEqualTo(metrics.length));
+        expect(
+            summary.recentMetrics.length, greaterThanOrEqualTo(metrics.length));
         for (final metric in metrics) {
           expect(summary.recentMetrics, contains(metric));
         }
@@ -118,9 +121,9 @@ void main() {
 
         // Assert
         expect(summary.startupTime, isNotNull);
-        final startupMetrics = summary.recentMetrics.where(
-          (m) => m.name == 'app_startup_time'
-        ).toList();
+        final startupMetrics = summary.recentMetrics
+            .where((m) => m.name == 'app_startup_time')
+            .toList();
         expect(startupMetrics, isNotEmpty);
       });
 
@@ -130,14 +133,15 @@ void main() {
 
         // Act
         performanceService.startTiming(operationName);
-        performanceService.stopTiming(operationName, metadata: {'test': 'true'});
-        
+        performanceService
+            .stopTiming(operationName, metadata: {'test': 'true'});
+
         final summary = performanceService.getPerformanceSummary();
 
         // Assert
-        final operationMetrics = summary.recentMetrics.where(
-          (m) => m.name == operationName
-        ).toList();
+        final operationMetrics = summary.recentMetrics
+            .where((m) => m.name == operationName)
+            .toList();
         expect(operationMetrics, isNotEmpty);
         expect(operationMetrics.first.metadata['test'], equals('true'));
       });
@@ -155,13 +159,16 @@ void main() {
         performanceService.initialize();
 
         // Act & Assert
-        expect(() => performanceService.setBatteryOptimization(false), returnsNormally);
-        expect(() => performanceService.setBatteryOptimization(true), returnsNormally);
+        expect(() => performanceService.setBatteryOptimization(false),
+            returnsNormally);
+        expect(() => performanceService.setBatteryOptimization(true),
+            returnsNormally);
       });
 
       test('should optimize image loading settings', () {
         // Act & Assert
-        expect(() => performanceService.optimizeImageLoading(), returnsNormally);
+        expect(
+            () => performanceService.optimizeImageLoading(), returnsNormally);
       });
     });
   });
