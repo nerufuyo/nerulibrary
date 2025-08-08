@@ -219,7 +219,7 @@ class ReaderSettings extends Equatable {
     this.lineHeight = 1.4,
     this.fontFamily = 'System',
     this.textColor = '#000000',
-    this.surfaceColor = '#FFFFFF',
+    this.backgroundColor = '#FFFFFF',
     this.readingDirection = ReadingDirection.leftToRight,
     this.pageTransition = PageTransition.slide,
     this.showPageNumbers = true,

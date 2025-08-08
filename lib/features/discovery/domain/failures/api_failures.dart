@@ -149,6 +149,7 @@ class AuthenticationApiFailure extends ApiFailure {
 
 /// Unknown API failures
 class UnknownApiFailure extends ApiFailure {
+  @override
   final dynamic originalError;
 
   const UnknownApiFailure({

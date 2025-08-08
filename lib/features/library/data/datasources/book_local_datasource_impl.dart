@@ -849,7 +849,9 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
       );
     } catch (e) {
       if (e is app_exceptions.NotFoundException ||
-          e is app_exceptions.DatabaseException) rethrow;
+          e is app_exceptions.DatabaseException) {
+        rethrow;
+      }
       throw app_exceptions.DatabaseException(
           'Failed to delete category: ${e.toString()}');
     }
@@ -1566,8 +1568,9 @@ class BookLocalDataSourceImpl implements BookLocalDataSource {
     if (book1.publicationDate != null && book2.publicationDate != null) {
       int year1 = int.tryParse(book1.publicationDate!) ?? 0;
       int year2 = int.tryParse(book2.publicationDate!) ?? 0;
-      if (year1 > 0 && year2 > 0 && (year1 - year2).abs() > 2)
+      if (year1 > 0 && year2 > 0 && (year1 - year2).abs() > 2) {
         return false; // Different editions should be within 2 years
+      }
     }
 
     return titleSimilarity > 0.8;

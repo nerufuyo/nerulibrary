@@ -728,7 +728,7 @@ class SearchServiceImpl implements SearchService {
 
     final index = content.toLowerCase().indexOf(searchTerm.toLowerCase());
     if (index == -1) {
-      return content.substring(0, snippetLength) + '...';
+      return '${content.substring(0, snippetLength)}...';
     }
 
     final start = (index - snippetLength ~/ 2).clamp(0, content.length);

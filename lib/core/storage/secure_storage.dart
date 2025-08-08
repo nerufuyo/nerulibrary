@@ -167,12 +167,12 @@ class SecureStorage {
   /// Store offline data for specific feature
   Future<void> storeOfflineData(String key, Map<String, dynamic> data) async {
     final jsonString = jsonEncode(data);
-    await _storage.write(key: '$_offlineDataKey_$key', value: jsonString);
+    await _storage.write(key: '${_offlineDataKey}_$key', value: jsonString);
   }
 
   /// Retrieve offline data for specific feature
   Future<Map<String, dynamic>?> getOfflineData(String key) async {
-    final jsonString = await _storage.read(key: '$_offlineDataKey_$key');
+    final jsonString = await _storage.read(key: '${_offlineDataKey}_$key');
     if (jsonString != null) {
       return jsonDecode(jsonString) as Map<String, dynamic>;
     }

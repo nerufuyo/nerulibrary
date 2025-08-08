@@ -311,8 +311,9 @@ class ProjectGutenbergDataSource {
     for (final format in formatsData.keys) {
       if (format.contains('epub')) availableFormats.add('epub');
       if (format.contains('pdf')) availableFormats.add('pdf');
-      if (format.contains('txt') || format.contains('text'))
+      if (format.contains('txt') || format.contains('text')) {
         availableFormats.add('text');
+      }
     }
 
     return {

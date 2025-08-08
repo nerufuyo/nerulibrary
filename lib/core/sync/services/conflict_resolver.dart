@@ -80,7 +80,7 @@ class DefaultConflictResolver implements ConflictResolver {
       // Times are very close, check for data differences
       if (_hasDataDifferences(localData, remoteData, entityType)) {
         return SyncConflict(
-          id: '$entityType_${localData['id']}_${DateTime.now().millisecondsSinceEpoch}',
+          id: '${entityType}_${localData['id']}_${DateTime.now().millisecondsSinceEpoch}',
           entityType: entityType,
           entityId: localData['id']?.toString() ??
               remoteData['id']?.toString() ??

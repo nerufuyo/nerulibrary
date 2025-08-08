@@ -103,7 +103,7 @@ class ImageOptimizer {
     if (imageUrl.startsWith('http')) {
       return CachedNetworkImageProvider(
         imageUrl,
-        cacheKey: '$imageUrl_${size.name}',
+        cacheKey: '${imageUrl}_${size.name}',
       );
     } else {
       return AssetImage(imageUrl);
