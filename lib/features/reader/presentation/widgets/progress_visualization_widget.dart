@@ -109,7 +109,7 @@ class ProgressVisualizationWidget extends ConsumerWidget {
       children: [
         LinearProgressIndicator(
           value: progress.progressFraction,
-          backgroundColor: colors.surface,
+          backgroundColor: colors.background,
           valueColor: AlwaysStoppedAnimation<Color>(colors.accent),
           minHeight: 8.0,
         ),
@@ -146,7 +146,7 @@ class ProgressVisualizationWidget extends ConsumerWidget {
             CircularProgressIndicator(
               value: progress.progressFraction,
               strokeWidth: 8.0,
-              backgroundColor: colors.surface,
+              backgroundColor: colors.background,
               valueColor: AlwaysStoppedAnimation<Color>(colors.accent),
             ),
             Center(
@@ -176,12 +176,12 @@ class ProgressVisualizationWidget extends ConsumerWidget {
   }
 
   Widget _buildArcProgress(BuildContext context, ProgressColorScheme colors) {
-    return Container(
+    return SizedBox(
       height: 100,
       child: CustomPaint(
         painter: ArcProgressPainter(
           progress: progress.progressFraction,
-          backgroundColor: colors.surface,
+          backgroundColor: colors.background,
           progressColor: colors.accent,
           strokeWidth: 12.0,
         ),
@@ -225,7 +225,7 @@ class ProgressVisualizationWidget extends ConsumerWidget {
                 height: 8,
                 margin: const EdgeInsets.symmetric(horizontal: 1),
                 decoration: BoxDecoration(
-                  color: isCompleted ? colors.accent : colors.surface,
+                  color: isCompleted ? colors.accent : colors.background,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -384,7 +384,7 @@ class ArcProgressPainter extends CustomPainter {
 
   ArcProgressPainter({
     required this.progress,
-    required this.surfaceColor,
+    required this.backgroundColor,
     required this.progressColor,
     required this.strokeWidth,
   });
@@ -429,7 +429,7 @@ class ArcProgressPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return oldDelegate is ArcProgressPainter &&
         (oldDelegate.progress != progress ||
-            oldDelegate.surfaceColor != backgroundColor ||
+            oldDelegate.backgroundColor != backgroundColor ||
             oldDelegate.progressColor != progressColor ||
             oldDelegate.strokeWidth != strokeWidth);
   }

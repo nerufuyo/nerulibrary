@@ -2,7 +2,12 @@ import '../../../../core/errors/failures.dart';
 
 /// Base class for all API-related failures
 abstract class ApiFailure extends Failure {
-  const ApiFailure({required super.message});
+  const ApiFailure({
+    required super.message,
+    super.code,
+    super.originalError,
+    super.stackTrace,
+  });
 }
 
 /// Network-related API failures
@@ -149,12 +154,9 @@ class AuthenticationApiFailure extends ApiFailure {
 
 /// Unknown API failures
 class UnknownApiFailure extends ApiFailure {
-  @override
-  final dynamic originalError;
-
   const UnknownApiFailure({
     required super.message,
-    this.originalError,
+    super.originalError,
   });
 
   @override

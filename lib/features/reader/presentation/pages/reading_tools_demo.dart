@@ -322,7 +322,7 @@ class _FeatureItem extends StatelessWidget {
               detail,
               style: theme.textTheme.bodySmall,
             ),
-          )).toList(),
+          )),
         ],
       ),
     );
@@ -429,7 +429,7 @@ class _ArchitectureItem extends StatelessWidget {
                 color: Colors.blue.shade700,
               ),
             ),
-          )).toList(),
+          )),
         ],
       ),
     );

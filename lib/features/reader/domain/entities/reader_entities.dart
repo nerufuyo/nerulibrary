@@ -275,7 +275,7 @@ class ReaderSettings extends Equatable {
       lineHeight: lineHeight ?? this.lineHeight,
       fontFamily: fontFamily ?? this.fontFamily,
       textColor: textColor ?? this.textColor,
-      backgroundColor: backgroundColor ?? this.surfaceColor,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
       readingDirection: readingDirection ?? this.readingDirection,
       pageTransition: pageTransition ?? this.pageTransition,
       showPageNumbers: showPageNumbers ?? this.showPageNumbers,

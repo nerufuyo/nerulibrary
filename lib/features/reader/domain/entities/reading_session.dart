@@ -200,7 +200,7 @@ class ReadingSession extends Equatable {
 
   @override
   String toString() => 'ReadingSession(id: $id, book: $bookId, '
-      'duration: $durationMinutesmin, pages: $pagesRead)';
+      'duration: ${durationMinutes}min, pages: $pagesRead)';
 }
 
 /// Reading session builder for creating new sessions

@@ -687,9 +687,9 @@ class _ProgressTrackingDemoState extends ConsumerState<ProgressTrackingDemo>
     final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
     if (hours > 0) {
-      return '$hoursh $minutesm';
+      return '${hours}h ${minutes}m';
     }
-    return '$minutesm';
+    return '${minutes}m';
   }
 
   String _interpretVelocity(double velocity) {

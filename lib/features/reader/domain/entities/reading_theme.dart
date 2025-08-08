@@ -22,7 +22,7 @@ class ReadingTheme extends Equatable {
     required this.id,
     required this.name,
     required this.description,
-    required this.surfaceColor,
+    required this.backgroundColor,
     required this.textColor,
     required this.primaryColor,
     required this.secondaryColor,
@@ -126,7 +126,7 @@ class ReadingTheme extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
-      backgroundColor: backgroundColor ?? this.surfaceColor,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
       textColor: textColor ?? this.textColor,
       primaryColor: primaryColor ?? this.primaryColor,
       secondaryColor: secondaryColor ?? this.secondaryColor,
@@ -145,16 +145,12 @@ class ReadingTheme extends Equatable {
             secondary: secondaryColor,
             surface: surfaceColor,
             onSurface: textColor,
-            background: backgroundColor,
-            onBackground: textColor,
           )
         : ColorScheme.light(
             primary: primaryColor,
             secondary: secondaryColor,
             surface: surfaceColor,
             onSurface: textColor,
-            background: backgroundColor,
-            onBackground: textColor,
           );
 
     return ThemeData(

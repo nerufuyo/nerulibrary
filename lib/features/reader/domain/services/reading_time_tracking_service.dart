@@ -104,7 +104,7 @@ class ReadingTimeTrackingServiceImpl implements ReadingTimeTrackingService {
         },
       );
 
-      final sessionId = '$bookId_${DateTime.now().millisecondsSinceEpoch}';
+      final sessionId = '${bookId}_${DateTime.now().millisecondsSinceEpoch}';
       final now = DateTime.now();
 
       final session = ReadingSessionBuilder()

@@ -72,9 +72,9 @@ class ReadingPosition extends Equatable {
     final minutes = readingTime.inMinutes % 60;
     
     if (hours > 0) {
-      return '$hoursh $minutesm';
+      return '${hours}h ${minutes}m';
     } else if (minutes > 0) {
-      return '$minutesm';
+      return '${minutes}m';
     } else {
       return '< 1m';
     }
