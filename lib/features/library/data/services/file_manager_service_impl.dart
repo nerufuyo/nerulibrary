@@ -15,19 +15,21 @@ import '../../../library/domain/entities/download_item.dart';
 import '../../../library/domain/services/file_manager_service.dart';
 
 /// Implementation of file manager service with comprehensive file operations
-/// 
+///
 /// Provides download management, storage operations, cleanup mechanisms,
 /// and file integrity verification with proper error handling.
 class FileManagerServiceImpl implements FileManagerService {
   final Dio _dio;
   final FilePermissionManager _permissionManager;
-  
+
   // Download queue and progress management
   final Map<String, DownloadItem> _downloadQueue = {};
   final Map<String, CancelToken> _cancelTokens = {};
-  final StreamController<DownloadItem> _progressController = StreamController.broadcast();
-  final StreamController<List<DownloadItem>> _queueController = StreamController.broadcast();
-  
+  final StreamController<DownloadItem> _progressController =
+      StreamController.broadcast();
+  final StreamController<List<DownloadItem>> _queueController =
+      StreamController.broadcast();
+
   // Directory paths
   String? _appDocumentsDir;
   String? _booksDir;
@@ -38,7 +40,8 @@ class FileManagerServiceImpl implements FileManagerService {
   FileManagerServiceImpl({
     required Dio dio,
     required FilePermissionManager permissionManager,
-  }) : _dio = dio, _permissionManager = permissionManager;
+  })  : _dio = dio,
+        _permissionManager = permissionManager;
 
   /// Initialize the file manager and create directory structure
   Future<void> initialize() async {
@@ -81,7 +84,8 @@ class FileManagerServiceImpl implements FileManagerService {
       if (formatValidation.isLeft()) {
         return formatValidation.fold(
           (failure) => Left(failure),
-          (_) => Left(UnsupportedFormatFailure(message: 'Invalid format validation')),
+          (_) => Left(
+              UnsupportedFormatFailure(message: 'Invalid format validation')),
         );
       }
 
@@ -119,10 +123,12 @@ class FileManagerServiceImpl implements FileManagerService {
   Future<void> _startDownload(DownloadItem item) async {
     try {
       // Update status to downloading
-      _updateDownloadItem(item.id, item.copyWith(
-        status: DownloadStatus.downloading,
-        startedAt: DateTime.now(),
-      ));
+      _updateDownloadItem(
+          item.id,
+          item.copyWith(
+            status: DownloadStatus.downloading,
+            startedAt: DateTime.now(),
+          ));
 
       // Create cancel token
       final cancelToken = CancelToken();
@@ -153,7 +159,7 @@ class FileManagerServiceImpl implements FileManagerService {
           filePath,
           item.expectedHash!,
         );
-        
+
         if (verificationResult.isLeft()) {
           _handleDownloadError(item.id, 'File integrity verification failed');
           return;
@@ -161,18 +167,21 @@ class FileManagerServiceImpl implements FileManagerService {
       }
 
       // Mark as completed
-      _updateDownloadItem(item.id, item.copyWith(
-        status: DownloadStatus.completed,
-        completedAt: DateTime.now(),
-        localPath: filePath,
-      ));
-
+      _updateDownloadItem(
+          item.id,
+          item.copyWith(
+            status: DownloadStatus.completed,
+            completedAt: DateTime.now(),
+            localPath: filePath,
+          ));
     } catch (e) {
       if (e is DioException && e.type == DioExceptionType.cancel) {
         // Download was cancelled
-        _updateDownloadItem(item.id, item.copyWith(
-          status: DownloadStatus.cancelled,
-        ));
+        _updateDownloadItem(
+            item.id,
+            item.copyWith(
+              status: DownloadStatus.cancelled,
+            ));
       } else {
         _handleDownloadError(item.id, e.toString());
       }
@@ -197,10 +206,12 @@ class FileManagerServiceImpl implements FileManagerService {
   void _handleDownloadError(String downloadId, String error) {
     final item = _downloadQueue[downloadId];
     if (item != null) {
-      _updateDownloadItem(downloadId, item.copyWith(
-        status: DownloadStatus.failed,
-        errorMessage: error,
-      ));
+      _updateDownloadItem(
+          downloadId,
+          item.copyWith(
+            status: DownloadStatus.failed,
+            errorMessage: error,
+          ));
     }
   }
 
@@ -217,7 +228,8 @@ class FileManagerServiceImpl implements FileManagerService {
   }
 
   @override
-  Future<Either<FileFailure, DownloadItem>> pauseDownload(String downloadId) async {
+  Future<Either<FileFailure, DownloadItem>> pauseDownload(
+      String downloadId) async {
     try {
       final item = _downloadQueue[downloadId];
       if (item == null) {
@@ -250,7 +262,8 @@ class FileManagerServiceImpl implements FileManagerService {
   }
 
   @override
-  Future<Either<FileFailure, DownloadItem>> resumeDownload(String downloadId) async {
+  Future<Either<FileFailure, DownloadItem>> resumeDownload(
+      String downloadId) async {
     try {
       final item = _downloadQueue[downloadId];
       if (item == null) {
@@ -304,9 +317,11 @@ class FileManagerServiceImpl implements FileManagerService {
       }
 
       // Update status and remove from queue
-      _updateDownloadItem(downloadId, item.copyWith(
-        status: DownloadStatus.cancelled,
-      ));
+      _updateDownloadItem(
+          downloadId,
+          item.copyWith(
+            status: DownloadStatus.cancelled,
+          ));
       _downloadQueue.remove(downloadId);
       _notifyQueueChanged();
 
@@ -319,7 +334,8 @@ class FileManagerServiceImpl implements FileManagerService {
   }
 
   @override
-  Future<Either<FileFailure, DownloadItem>> retryDownload(String downloadId) async {
+  Future<Either<FileFailure, DownloadItem>> retryDownload(
+      String downloadId) async {
     try {
       final item = _downloadQueue[downloadId];
       if (item == null) {
@@ -359,7 +375,8 @@ class FileManagerServiceImpl implements FileManagerService {
   }
 
   @override
-  Future<Either<FileFailure, DownloadItem>> getDownloadStatus(String downloadId) async {
+  Future<Either<FileFailure, DownloadItem>> getDownloadStatus(
+      String downloadId) async {
     try {
       final item = _downloadQueue[downloadId];
       if (item == null) {
@@ -383,15 +400,15 @@ class FileManagerServiceImpl implements FileManagerService {
   }) async {
     try {
       var downloads = _downloadQueue.values.toList();
-      
+
       if (status != null) {
         downloads = downloads.where((item) => item.status == status).toList();
       }
-      
+
       if (bookId != null) {
         downloads = downloads.where((item) => item.bookId == bookId).toList();
       }
-      
+
       return Right(downloads);
     } catch (e) {
       return Left(StorageFailure(
@@ -401,10 +418,11 @@ class FileManagerServiceImpl implements FileManagerService {
   }
 
   @override
-  Future<Either<FileFailure, DownloadStatistics>> getDownloadStatistics() async {
+  Future<Either<FileFailure, DownloadStatistics>>
+      getDownloadStatistics() async {
     try {
       final downloads = _downloadQueue.values.toList();
-      
+
       final stats = DownloadStatistics(
         totalDownloads: downloads.length,
         completedDownloads: downloads.where((d) => d.isCompleted).length,
@@ -417,7 +435,7 @@ class FileManagerServiceImpl implements FileManagerService {
         averageDownloadSpeed: _calculateAverageSpeed(downloads),
         lastUpdated: DateTime.now(),
       );
-      
+
       return Right(stats);
     } catch (e) {
       return Left(StorageFailure(
@@ -433,13 +451,13 @@ class FileManagerServiceImpl implements FileManagerService {
           .where((item) => item.isCompleted)
           .map((item) => item.id)
           .toList();
-      
+
       for (final id in completedIds) {
         _downloadQueue.remove(id);
       }
-      
+
       _notifyQueueChanged();
-      
+
       return Right(completedIds.length);
     } catch (e) {
       return Left(StorageFailure(
@@ -457,10 +475,10 @@ class FileManagerServiceImpl implements FileManagerService {
       if (_booksDir == null) {
         await _initializeDirectories();
       }
-      
+
       final bookDir = path.join(_booksDir!, bookId);
       await Directory(bookDir).create(recursive: true);
-      
+
       final filePath = path.join(bookDir, fileName);
       return Right(filePath);
     } catch (e) {
@@ -616,7 +634,7 @@ class FileManagerServiceImpl implements FileManagerService {
       final actualHash = digest.toString();
 
       final isValid = actualHash.toLowerCase() == expectedHash.toLowerCase();
-      
+
       if (!isValid) {
         return Left(FileIntegrityFailure(
           message: 'File integrity verification failed',
@@ -641,11 +659,11 @@ class FileManagerServiceImpl implements FileManagerService {
       if (_appDocumentsDir == null) {
         await _initializeDirectories();
       }
-      
+
       final dir = Directory(_appDocumentsDir!);
       // Check if directory exists before getting storage info
       await dir.stat();
-      
+
       // Note: This is a simplified implementation
       // In a real app, you might want to use platform-specific code
       // to get accurate storage information
@@ -663,8 +681,9 @@ class FileManagerServiceImpl implements FileManagerService {
       if (_appDocumentsDir == null) {
         await _initializeDirectories();
       }
-      
-      final usedSpace = await _calculateDirectorySize(Directory(_appDocumentsDir!));
+
+      final usedSpace =
+          await _calculateDirectorySize(Directory(_appDocumentsDir!));
       return Right(usedSpace);
     } catch (e) {
       return Left(StorageFailure(
@@ -681,7 +700,7 @@ class FileManagerServiceImpl implements FileManagerService {
       if (_tempDir == null) {
         await _initializeDirectories();
       }
-      
+
       final tempDirectory = Directory(_tempDir!);
       if (!await tempDirectory.exists()) {
         return const Right(CleanupResult(
@@ -692,7 +711,7 @@ class FileManagerServiceImpl implements FileManagerService {
       }
 
       final startTime = DateTime.now();
-      final cutoffTime = olderThan != null 
+      final cutoffTime = olderThan != null
           ? DateTime.now().subtract(olderThan)
           : DateTime.now().subtract(StorageConstants.tempFileRetention);
 
@@ -716,7 +735,7 @@ class FileManagerServiceImpl implements FileManagerService {
       }
 
       final duration = DateTime.now().difference(startTime);
-      
+
       return Right(CleanupResult(
         filesDeleted: filesDeleted,
         bytesFreed: bytesFreed,
@@ -740,7 +759,7 @@ class FileManagerServiceImpl implements FileManagerService {
       if (_cacheDir == null) {
         await _initializeDirectories();
       }
-      
+
       final cacheDirectory = Directory(_cacheDir!);
       if (!await cacheDirectory.exists()) {
         return const Right(CleanupResult(
@@ -751,7 +770,7 @@ class FileManagerServiceImpl implements FileManagerService {
       }
 
       final startTime = DateTime.now();
-      final cutoffTime = olderThan != null 
+      final cutoffTime = olderThan != null
           ? DateTime.now().subtract(olderThan)
           : DateTime.now().subtract(StorageConstants.cacheFileRetention);
 
@@ -776,16 +795,17 @@ class FileManagerServiceImpl implements FileManagerService {
       cacheFiles.sort((a, b) => a.value.modified.compareTo(b.value.modified));
 
       // Delete old files or files exceeding cache size limit
-      int currentCacheSize = cacheFiles.fold<int>(0, (sum, entry) => sum + entry.value.size);
+      int currentCacheSize =
+          cacheFiles.fold<int>(0, (sum, entry) => sum + entry.value.size);
       final maxSize = maxCacheSize ?? StorageConstants.maxCacheSize;
 
       for (final entry in cacheFiles) {
         final file = entry.key;
         final stat = entry.value;
-        
-        final shouldDelete = stat.modified.isBefore(cutoffTime) || 
-                           currentCacheSize > maxSize;
-        
+
+        final shouldDelete =
+            stat.modified.isBefore(cutoffTime) || currentCacheSize > maxSize;
+
         if (shouldDelete) {
           try {
             bytesFreed += stat.size;
@@ -799,7 +819,7 @@ class FileManagerServiceImpl implements FileManagerService {
       }
 
       final duration = DateTime.now().difference(startTime);
-      
+
       return Right(CleanupResult(
         filesDeleted: filesDeleted,
         bytesFreed: bytesFreed,
@@ -861,7 +881,8 @@ class FileManagerServiceImpl implements FileManagerService {
       if (includeCache) {
         final cacheResult = await cleanupCachedFiles(olderThan: olderThan);
         cacheResult.fold(
-          (failure) => allErrors.add('Cache cleanup failed: ${failure.message}'),
+          (failure) =>
+              allErrors.add('Cache cleanup failed: ${failure.message}'),
           (result) {
             totalFilesDeleted += result.filesDeleted;
             totalBytesFreed += result.bytesFreed;
@@ -874,7 +895,8 @@ class FileManagerServiceImpl implements FileManagerService {
       if (includeOrphaned) {
         final orphanedResult = await cleanupOrphanedFiles();
         orphanedResult.fold(
-          (failure) => allErrors.add('Orphaned cleanup failed: ${failure.message}'),
+          (failure) =>
+              allErrors.add('Orphaned cleanup failed: ${failure.message}'),
           (result) {
             totalFilesDeleted += result.filesDeleted;
             totalBytesFreed += result.bytesFreed;
@@ -932,8 +954,12 @@ class FileManagerServiceImpl implements FileManagerService {
   Either<FileFailure, bool> validateFileFormat(String fileName) {
     try {
       final extension = path.extension(fileName).toLowerCase();
-      final supportedFormats = [StorageConstants.extEpub, StorageConstants.extPdf, StorageConstants.extTxt];
-      
+      final supportedFormats = [
+        StorageConstants.extEpub,
+        StorageConstants.extPdf,
+        StorageConstants.extTxt
+      ];
+
       if (!supportedFormats.contains(extension)) {
         return Left(UnsupportedFormatFailure(
           message: 'File format not supported: $extension',
@@ -941,7 +967,7 @@ class FileManagerServiceImpl implements FileManagerService {
           supportedFormats: supportedFormats,
         ));
       }
-      
+
       return const Right(true);
     } catch (e) {
       return Left(UnsupportedFormatFailure(
@@ -960,7 +986,7 @@ class FileManagerServiceImpl implements FileManagerService {
           maxAllowedSize: StorageConstants.maxBookFileSize,
         ));
       }
-      
+
       return const Right(true);
     } catch (e) {
       return Left(FileSizeFailure(
@@ -1020,7 +1046,7 @@ class FileManagerServiceImpl implements FileManagerService {
   /// Calculate directory size recursively
   Future<int> _calculateDirectorySize(Directory directory) async {
     int size = 0;
-    
+
     try {
       await for (final entity in directory.list(recursive: true)) {
         if (entity is File) {
@@ -1031,7 +1057,7 @@ class FileManagerServiceImpl implements FileManagerService {
     } catch (e) {
       // Handle permission or access errors
     }
-    
+
     return size;
   }
 
@@ -1039,7 +1065,7 @@ class FileManagerServiceImpl implements FileManagerService {
   void dispose() {
     _progressController.close();
     _queueController.close();
-    
+
     // Cancel all active downloads
     for (final cancelToken in _cancelTokens.values) {
       cancelToken.cancel('FileManager disposed');

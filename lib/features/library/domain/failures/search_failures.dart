@@ -9,7 +9,7 @@ abstract class SearchFailure extends Failure {
 class InvalidSearchQueryFailure extends SearchFailure {
   /// The invalid query that caused the failure
   final String query;
-  
+
   /// Specific validation error details
   final String validationError;
 
@@ -54,7 +54,7 @@ class InvalidSearchQueryFailure extends SearchFailure {
 class SearchIndexFailure extends SearchFailure {
   /// The type of index problem
   final SearchIndexErrorType errorType;
-  
+
   /// Additional technical details
   final String? technicalDetails;
 
@@ -98,16 +98,16 @@ class SearchIndexFailure extends SearchFailure {
 enum SearchIndexErrorType {
   /// Index has not been created or initialized
   notInitialized,
-  
+
   /// Index exists but is corrupted
   corrupted,
-  
+
   /// Failed to create or rebuild index
   creationFailed,
-  
+
   /// Index update operation failed
   updateFailed,
-  
+
   /// Index optimization failed
   optimizationFailed,
 }
@@ -116,7 +116,7 @@ enum SearchIndexErrorType {
 class SearchTimeoutFailure extends SearchFailure {
   /// The timeout duration that was exceeded
   final Duration timeoutDuration;
-  
+
   /// The query that timed out
   final String query;
 
@@ -143,7 +143,7 @@ class SearchTimeoutFailure extends SearchFailure {
 class NoSearchResultsFailure extends SearchFailure {
   /// The query that returned no results
   final String query;
-  
+
   /// Applied filters
   final Map<String, dynamic>? filters;
 
@@ -181,10 +181,10 @@ class NoSearchResultsFailure extends SearchFailure {
 class SearchPaginationFailure extends SearchFailure {
   /// The invalid page number
   final int page;
-  
+
   /// The limit per page
   final int limit;
-  
+
   /// Maximum allowed page
   final int? maxPage;
 
@@ -222,10 +222,10 @@ class SearchPaginationFailure extends SearchFailure {
 class SearchFilterFailure extends SearchFailure {
   /// The invalid filter name
   final String filterName;
-  
+
   /// The invalid filter value
   final dynamic filterValue;
-  
+
   /// Expected filter format or values
   final String expectedFormat;
 
@@ -258,10 +258,10 @@ class SearchFilterFailure extends SearchFailure {
 class SearchDatabaseFailure extends SearchFailure {
   /// The database operation that failed
   final String operation;
-  
+
   /// The SQL query or operation details
   final String? queryDetails;
-  
+
   /// Database error code if available
   final String? errorCode;
 
@@ -306,7 +306,7 @@ class SearchDatabaseFailure extends SearchFailure {
 class SearchUnavailableFailure extends SearchFailure {
   /// Reason why search is unavailable
   final String reason;
-  
+
   /// Whether this is a temporary issue
   final bool isTemporary;
 
