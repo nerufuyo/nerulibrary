@@ -14,17 +14,18 @@ import '../../domain/entities/theme_configuration.dart';
 import '../../domain/services/theme_service.dart';
 
 /// Implementation of theme service for managing reading themes
-/// 
+///
 /// Handles persistent storage, real-time updates, and system integration
 /// for reading theme configurations.
 class ThemeServiceImpl implements ThemeService {
   final SharedPreferences _prefs;
-  
+
   // Stream controllers for real-time updates
-  final _themeConfigController = StreamController<ThemeConfiguration>.broadcast();
+  final _themeConfigController =
+      StreamController<ThemeConfiguration>.broadcast();
   final _readingThemeController = StreamController<ReadingTheme>.broadcast();
   final _fontSettingsController = StreamController<FontSettings>.broadcast();
-  
+
   // Current configuration cache
   ThemeConfiguration? _currentConfig;
 
@@ -35,16 +36,14 @@ class ThemeServiceImpl implements ThemeService {
   }
 
   @override
-  Stream<ThemeConfiguration> get themeConfigurationStream => 
+  Stream<ThemeConfiguration> get themeConfigurationStream =>
       _themeConfigController.stream;
 
   @override
-  Stream<ReadingTheme> get readingThemeStream => 
-      _readingThemeController.stream;
+  Stream<ReadingTheme> get readingThemeStream => _readingThemeController.stream;
 
   @override
-  Stream<FontSettings> get fontSettingsStream => 
-      _fontSettingsController.stream;
+  Stream<FontSettings> get fontSettingsStream => _fontSettingsController.stream;
 
   /// Load initial configuration from storage
   Future<void> _loadInitialConfiguration() async {
@@ -56,10 +55,11 @@ class ThemeServiceImpl implements ThemeService {
   }
 
   @override
-  Future<Either<Failure, ThemeConfiguration>> getCurrentThemeConfiguration() async {
+  Future<Either<Failure, ThemeConfiguration>>
+      getCurrentThemeConfiguration() async {
     try {
       final configJson = _prefs.getString(StorageConstants.prefReadingTheme);
-      
+
       if (configJson == null) {
         // Return default configuration
         final defaultConfig = ThemeConfiguration.defaultConfig;
@@ -69,7 +69,7 @@ class ThemeServiceImpl implements ThemeService {
 
       final configMap = jsonDecode(configJson) as Map<String, dynamic>;
       final config = ThemeConfiguration.fromJson(configMap);
-      
+
       _currentConfig = config;
       return Right(config);
     } catch (e) {
@@ -80,16 +80,17 @@ class ThemeServiceImpl implements ThemeService {
   }
 
   @override
-  Future<Either<Failure, void>> saveThemeConfiguration(ThemeConfiguration config) async {
+  Future<Either<Failure, void>> saveThemeConfiguration(
+      ThemeConfiguration config) async {
     try {
       await _saveConfigurationToStorage(config);
       _currentConfig = config;
-      
+
       // Emit updates to streams
       _themeConfigController.add(config);
       _readingThemeController.add(config.readingTheme);
       _fontSettingsController.add(config.fontSettings);
-      
+
       return const Right(null);
     } catch (e) {
       return Left(CacheFailure(
@@ -128,7 +129,8 @@ class ThemeServiceImpl implements ThemeService {
   }
 
   @override
-  Future<Either<Failure, void>> setFontSettings(FontSettings fontSettings) async {
+  Future<Either<Failure, void>> setFontSettings(
+      FontSettings fontSettings) async {
     try {
       final currentConfig = _currentConfig ?? ThemeConfiguration.defaultConfig;
       final newConfig = currentConfig.copyWith(fontSettings: fontSettings);
@@ -161,7 +163,7 @@ class ThemeServiceImpl implements ThemeService {
     try {
       final currentConfig = _currentConfig ?? ThemeConfiguration.defaultConfig;
       final currentMode = currentConfig.globalThemeMode;
-      
+
       ThemeMode newMode;
       switch (currentMode) {
         case ThemeMode.light:
@@ -174,7 +176,7 @@ class ThemeServiceImpl implements ThemeService {
           newMode = ThemeMode.light;
           break;
       }
-      
+
       return await setGlobalThemeMode(newMode);
     } catch (e) {
       return Left(UnknownFailure(
@@ -210,7 +212,8 @@ class ThemeServiceImpl implements ThemeService {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> exportThemeConfiguration() async {
+  Future<Either<Failure, Map<String, dynamic>>>
+      exportThemeConfiguration() async {
     try {
       final config = _currentConfig ?? ThemeConfiguration.defaultConfig;
       return Right(config.toJson());
@@ -240,13 +243,14 @@ class ThemeServiceImpl implements ThemeService {
       final clampedBrightness = brightness.clamp(0.0, 1.0);
       SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(
-          systemNavigationBarIconBrightness: 
+          systemNavigationBarIconBrightness:
               clampedBrightness > 0.5 ? Brightness.dark : Brightness.light,
         ),
       );
-      
+
       final currentConfig = _currentConfig ?? ThemeConfiguration.defaultConfig;
-      final newConfig = currentConfig.copyWith(screenBrightness: clampedBrightness);
+      final newConfig =
+          currentConfig.copyWith(screenBrightness: clampedBrightness);
       return await saveThemeConfiguration(newConfig);
     } catch (e) {
       return Left(UnknownFailure(
@@ -297,7 +301,8 @@ class ThemeServiceImpl implements ThemeService {
   Future<Either<Failure, void>> setFontSizeLevel(int level) async {
     try {
       final currentConfig = _currentConfig ?? ThemeConfiguration.defaultConfig;
-      final newFontSettings = currentConfig.fontSettings.withFontSizeLevel(level);
+      final newFontSettings =
+          currentConfig.fontSettings.withFontSizeLevel(level);
       return await setFontSettings(newFontSettings);
     } catch (e) {
       return Left(UnknownFailure(
@@ -336,7 +341,8 @@ class ThemeServiceImpl implements ThemeService {
   Future<Either<Failure, void>> setFontFamily(String fontFamily) async {
     try {
       final currentConfig = _currentConfig ?? ThemeConfiguration.defaultConfig;
-      final newFontSettings = currentConfig.fontSettings.copyWith(fontFamily: fontFamily);
+      final newFontSettings =
+          currentConfig.fontSettings.copyWith(fontFamily: fontFamily);
       return await setFontSettings(newFontSettings);
     } catch (e) {
       return Left(UnknownFailure(
@@ -362,14 +368,15 @@ class ThemeServiceImpl implements ThemeService {
   ) async {
     try {
       // Basic validation
-      if (config.fontSettings.fontSize < 8.0 || config.fontSettings.fontSize > 32.0) {
+      if (config.fontSettings.fontSize < 8.0 ||
+          config.fontSettings.fontSize > 32.0) {
         return Left(ValidationFailure(message: 'Invalid font size'));
       }
-      
+
       if (config.screenBrightness < 0.0 || config.screenBrightness > 1.0) {
         return Left(ValidationFailure(message: 'Invalid screen brightness'));
       }
-      
+
       return const Right(true);
     } catch (e) {
       return Left(ValidationFailure(
