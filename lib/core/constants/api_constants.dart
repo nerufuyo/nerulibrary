@@ -4,64 +4,64 @@
 /// for book discovery and download services.
 class ApiConstants {
   // Project Gutenberg API
-  static const String PROJECT_GUTENBERG_BASE_URL = 'https://www.gutenberg.org';
-  static const String PROJECT_GUTENBERG_SEARCH = '/ebooks/search/';
-  static const String PROJECT_GUTENBERG_EPUB = '/ebooks/{id}.epub.noimages';
-  static const String PROJECT_GUTENBERG_PDF = '/ebooks/{id}.pdf';
-  static const String PROJECT_GUTENBERG_TEXT = '/ebooks/{id}/pg{id}.txt';
-  static const Duration PROJECT_GUTENBERG_RATE_LIMIT = Duration(seconds: 1);
+  static const String projectGutenbergBaseUrl = 'https://www.gutenberg.org';
+  static const String projectGutenbergSearch = '/ebooks/search/';
+  static const String projectGutenbergEpub = '/ebooks/{id}.epub.noimages';
+  static const String projectGutenbergPdf = '/ebooks/{id}.pdf';
+  static const String projectGutenbergText = '/ebooks/{id}/pg{id}.txt';
+  static const Duration projectGutenbergRateLimit = Duration(seconds: 1);
   
   // Internet Archive API
-  static const String INTERNET_ARCHIVE_BASE_URL = 'https://archive.org';
-  static const String INTERNET_ARCHIVE_SEARCH = '/advancedsearch.php';
-  static const String INTERNET_ARCHIVE_METADATA = '/metadata/{identifier}';
-  static const String INTERNET_ARCHIVE_DOWNLOAD = '/download/{identifier}/{filename}';
-  static const String INTERNET_ARCHIVE_SCRAPE = '/services/search/v1/scrape';
-  static const int INTERNET_ARCHIVE_REQUESTS_PER_MINUTE = 100;
+  static const String internetArchiveBaseUrl = 'https://archive.org';
+  static const String internetArchiveSearch = '/advancedsearch.php';
+  static const String internetArchiveMetadata = '/metadata/{identifier}';
+  static const String internetArchiveDownload = '/download/{identifier}/{filename}';
+  static const String internetArchiveScrape = '/services/search/v1/scrape';
+  static const int internetArchiveRequestsPerMinute = 100;
   
   // OpenLibrary API
-  static const String OPENLIBRARY_BASE_URL = 'https://openlibrary.org';
-  static const String OPENLIBRARY_SEARCH = '/search.json';
-  static const String OPENLIBRARY_WORKS = '/works/{work_id}.json';
-  static const String OPENLIBRARY_BOOKS = '/api/books';
-  static const String OPENLIBRARY_AUTHORS = '/authors/{author_id}.json';
-  static const int OPENLIBRARY_REQUESTS_PER_MINUTE = 100;
+  static const String openlibraryBaseUrl = 'https://openlibrary.org';
+  static const String openlibrarySearch = '/search.json';
+  static const String openlibraryWorks = '/works/{work_id}.json';
+  static const String openlibraryBooks = '/api/books';
+  static const String openlibraryAuthors = '/authors/{author_id}.json';
+  static const int openlibraryRequestsPerMinute = 100;
   
   // DOAB (Directory of Open Access Books) API
-  static const String DOAB_BASE_URL = 'https://directory.doabooks.org';
-  static const String DOAB_SEARCH = '/rest/search';
-  static const String DOAB_BOOKS = '/rest/books/{book_id}';
-  static const String DOAB_SUBJECTS = '/rest/subjects';
-  static const Duration DOAB_RATE_LIMIT = Duration(milliseconds: 500);
+  static const String doabBaseUrl = 'https://directory.doabooks.org';
+  static const String doabSearch = '/rest/search';
+  static const String doabBooks = '/rest/books/{book_id}';
+  static const String doabSubjects = '/rest/subjects';
+  static const Duration doabRateLimit = Duration(milliseconds: 500);
   
   // Common Query Parameters
-  static const String QUERY_PARAM_SEARCH = 'q';
-  static const String QUERY_PARAM_FORMAT = 'format';
-  static const String QUERY_PARAM_LIMIT = 'limit';
-  static const String QUERY_PARAM_OFFSET = 'offset';
-  static const String QUERY_PARAM_PAGE = 'page';
+  static const String queryParamSearch = 'q';
+  static const String queryParamFormat = 'format';
+  static const String queryParamLimit = 'limit';
+  static const String queryParamOffset = 'offset';
+  static const String queryParamPage = 'page';
   
   // Response Formats
-  static const String FORMAT_JSON = 'json';
-  static const String FORMAT_XML = 'xml';
-  static const String FORMAT_EPUB = 'epub';
-  static const String FORMAT_PDF = 'pdf';
-  static const String FORMAT_TXT = 'txt';
+  static const String formatJson = 'json';
+  static const String formatXml = 'xml';
+  static const String formatEpub = 'epub';
+  static const String formatPdf = 'pdf';
+  static const String formatTxt = 'txt';
   
   // Default Values
-  static const int DEFAULT_SEARCH_LIMIT = 20;
-  static const int DEFAULT_MAX_RETRIES = 3;
-  static const Duration DEFAULT_RETRY_DELAY = Duration(seconds: 2);
+  static const int defaultSearchLimit = 20;
+  static const int defaultMaxRetries = 3;
+  static const Duration defaultRetryDelay = Duration(seconds: 2);
   
   // Error Codes
-  static const int HTTP_BAD_REQUEST = 400;
-  static const int HTTP_UNAUTHORIZED = 401;
-  static const int HTTP_FORBIDDEN = 403;
-  static const int HTTP_NOT_FOUND = 404;
-  static const int HTTP_TOO_MANY_REQUESTS = 429;
-  static const int HTTP_INTERNAL_SERVER_ERROR = 500;
-  static const int HTTP_BAD_GATEWAY = 502;
-  static const int HTTP_SERVICE_UNAVAILABLE = 503;
+  static const int httpBadRequest = 400;
+  static const int httpUnauthorized = 401;
+  static const int httpForbidden = 403;
+  static const int httpNotFound = 404;
+  static const int httpTooManyRequests = 429;
+  static const int httpInternalServerError = 500;
+  static const int httpBadGateway = 502;
+  static const int httpServiceUnavailable = 503;
   
   // Private constructor to prevent instantiation
   ApiConstants._();

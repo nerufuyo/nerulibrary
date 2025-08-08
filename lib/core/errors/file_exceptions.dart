@@ -23,16 +23,12 @@ class DownloadException extends FileException {
   final int? statusCode;
 
   const DownloadException({
-    required String message,
+    required super.message,
     this.url,
     this.statusCode,
-    String? code,
-    dynamic originalError,
-  }) : super(
-          message: message,
-          code: code,
-          originalError: originalError,
-        );
+    super.code,
+    super.originalError,
+  });
 
   @override
   String toString() => 'DownloadException: $message${url != null ? ' (URL: $url)' : ''}';
@@ -44,16 +40,12 @@ class StorageException extends FileException {
   final StorageErrorType errorType;
 
   const StorageException({
-    required String message,
+    required super.message,
     required this.errorType,
     this.path,
-    String? code,
-    dynamic originalError,
-  }) : super(
-          message: message,
-          code: code,
-          originalError: originalError,
-        );
+    super.code,
+    super.originalError,
+  });
 
   @override
   String toString() => 'StorageException: $message${path != null ? ' (Path: $path)' : ''}';
@@ -64,15 +56,11 @@ class PermissionException extends FileException {
   final String? requiredPermission;
 
   const PermissionException({
-    required String message,
+    required super.message,
     this.requiredPermission,
-    String? code,
-    dynamic originalError,
-  }) : super(
-          message: message,
-          code: code,
-          originalError: originalError,
-        );
+    super.code,
+    super.originalError,
+  });
 
   @override
   String toString() => 'PermissionException: $message';
@@ -85,17 +73,13 @@ class FileIntegrityException extends FileException {
   final String? filePath;
 
   const FileIntegrityException({
-    required String message,
+    required super.message,
     this.expectedHash,
     this.actualHash,
     this.filePath,
-    String? code,
-    dynamic originalError,
-  }) : super(
-          message: message,
-          code: code,
-          originalError: originalError,
-        );
+    super.code,
+    super.originalError,
+  });
 
   @override
   String toString() => 'FileIntegrityException: $message';
@@ -120,16 +104,12 @@ class FileSizeException extends FileException {
   final int? maxAllowedSize;
 
   const FileSizeException({
-    required String message,
+    required super.message,
     this.actualSize,
     this.maxAllowedSize,
-    String? code,
-    dynamic originalError,
-  }) : super(
-          message: message,
-          code: code,
-          originalError: originalError,
-        );
+    super.code,
+    super.originalError,
+  });
 
   @override
   String toString() => 'FileSizeException: $message';
@@ -141,16 +121,12 @@ class UnsupportedFormatException extends FileException {
   final List<String>? supportedFormats;
 
   const UnsupportedFormatException({
-    required String message,
+    required super.message,
     this.fileExtension,
     this.supportedFormats,
-    String? code,
-    dynamic originalError,
-  }) : super(
-          message: message,
-          code: code,
-          originalError: originalError,
-        );
+    super.code,
+    super.originalError,
+  });
 
   @override
   String toString() => 'UnsupportedFormatException: $message';

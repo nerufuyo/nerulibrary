@@ -1,7 +1,7 @@
 import '../../../../core/errors/failures.dart';
 
 /// Reader-specific failure types
-/// 
+///
 /// Extends base [Failure] class to provide specific error handling
 /// for book reading operations including format-specific errors.
 
@@ -14,161 +14,168 @@ abstract class ReaderFailure extends Failure {
 class BookOpenFailure extends ReaderFailure {
   /// Path to the file that failed to open
   final String? filePath;
-  
+
   /// Specific error details
   final String? details;
 
   const BookOpenFailure({
-    required String message,
+    required super.message,
     this.filePath,
     this.details,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, filePath, details];
 
   @override
-  String toString() => 'BookOpenFailure: $message${filePath != null ? ' (file: $filePath)' : ''}';
+  String toString() =>
+      'BookOpenFailure: $message${filePath != null ? ' (file: $filePath)' : ''}';
 }
 
 /// Failure when book format is not supported
 class UnsupportedFormatFailure extends ReaderFailure {
   /// File extension of the unsupported format
   final String? fileExtension;
-  
+
   /// List of supported formats
   final List<String>? supportedFormats;
 
   const UnsupportedFormatFailure({
-    required String message,
+    required super.message,
     this.fileExtension,
     this.supportedFormats,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, fileExtension, supportedFormats];
 
   @override
-  String toString() => 'UnsupportedFormatFailure: $message${fileExtension != null ? ' (extension: $fileExtension)' : ''}';
+  String toString() =>
+      'UnsupportedFormatFailure: $message${fileExtension != null ? ' (extension: $fileExtension)' : ''}';
 }
 
 /// Failure related to file operations
 class ReaderFileFailure extends ReaderFailure {
   /// Path to the file that caused the failure
   final String? filePath;
-  
+
   /// The operation that failed
   final String operation;
-  
+
   /// Additional error details
   final String? details;
 
   const ReaderFileFailure({
-    required String message,
+    required super.message,
     required this.operation,
     this.filePath,
     this.details,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, operation, filePath, details];
 
   @override
-  String toString() => 'ReaderFileFailure: $message (operation: $operation)${filePath != null ? ' (file: $filePath)' : ''}';
+  String toString() =>
+      'ReaderFileFailure: $message (operation: $operation)${filePath != null ? ' (file: $filePath)' : ''}';
 }
 
 /// Failure when PDF-specific operations fail
 class PdfReaderFailure extends ReaderFailure {
   /// Page number where the failure occurred
   final int? pageNumber;
-  
+
   /// Total pages in the document
   final int? totalPages;
-  
+
   /// PDF-specific error code
   final String? errorCode;
 
   const PdfReaderFailure({
-    required String message,
+    required super.message,
     this.pageNumber,
     this.totalPages,
     this.errorCode,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, pageNumber, totalPages, errorCode];
 
   @override
-  String toString() => 'PdfReaderFailure: $message${pageNumber != null ? ' (page: $pageNumber)' : ''}';
+  String toString() =>
+      'PdfReaderFailure: $message${pageNumber != null ? ' (page: $pageNumber)' : ''}';
 }
 
 /// Failure when EPUB-specific operations fail
 class EpubReaderFailure extends ReaderFailure {
   /// Chapter index where the failure occurred
   final int? chapterIndex;
-  
+
   /// Total chapters in the book
   final int? totalChapters;
-  
+
   /// EPUB-specific error details
   final String? epubDetails;
 
   const EpubReaderFailure({
-    required String message,
+    required super.message,
     this.chapterIndex,
     this.totalChapters,
     this.epubDetails,
-  }) : super(message: message);
+  });
 
   @override
-  List<Object?> get props => [message, chapterIndex, totalChapters, epubDetails];
+  List<Object?> get props =>
+      [message, chapterIndex, totalChapters, epubDetails];
 
   @override
-  String toString() => 'EpubReaderFailure: $message${chapterIndex != null ? ' (chapter: $chapterIndex)' : ''}';
+  String toString() =>
+      'EpubReaderFailure: $message${chapterIndex != null ? ' (chapter: $chapterIndex)' : ''}';
 }
 
 /// Failure during page navigation
 class NavigationFailure extends ReaderFailure {
   /// The page number that was requested
   final int? requestedPage;
-  
+
   /// Total pages available
   final int? totalPages;
-  
+
   /// Direction of navigation (next, previous, goto)
   final String? direction;
 
   const NavigationFailure({
-    required String message,
+    required super.message,
     this.requestedPage,
     this.totalPages,
     this.direction,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, requestedPage, totalPages, direction];
 
   @override
-  String toString() => 'NavigationFailure: $message${requestedPage != null ? ' (requested: $requestedPage)' : ''}';
+  String toString() =>
+      'NavigationFailure: $message${requestedPage != null ? ' (requested: $requestedPage)' : ''}';
 }
 
 /// Failure during text search operations
 class SearchFailure extends ReaderFailure {
   /// The search query that failed
   final String query;
-  
+
   /// Search scope (page, chapter, entire book)
   final String? scope;
-  
+
   /// Search-specific error details
   final String? searchDetails;
 
   const SearchFailure({
-    required String message,
+    required super.message,
     required this.query,
     this.scope,
     this.searchDetails,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, query, scope, searchDetails];
@@ -181,65 +188,68 @@ class SearchFailure extends ReaderFailure {
 class ContentExtractionFailure extends ReaderFailure {
   /// Type of content that failed to extract
   final String contentType;
-  
+
   /// Location in the document where extraction failed
   final String? sourceLocation;
-  
+
   /// Content-specific error details
   final String? extractionDetails;
 
   const ContentExtractionFailure({
-    required String message,
+    required super.message,
     required this.contentType,
     this.sourceLocation,
     this.extractionDetails,
-  }) : super(message: message);
+  });
 
   @override
-  List<Object?> get props => [message, contentType, sourceLocation, extractionDetails];
+  List<Object?> get props =>
+      [message, contentType, sourceLocation, extractionDetails];
 
   @override
-  String toString() => 'ContentExtractionFailure: $message (type: $contentType)';
+  String toString() =>
+      'ContentExtractionFailure: $message (type: $contentType)';
 }
 
 /// Failure related to reader settings
 class SettingsFailure extends ReaderFailure {
   /// The setting that failed to update
   final String? settingName;
-  
+
   /// The value that was attempted
   final dynamic attemptedValue;
 
   const SettingsFailure({
-    required String message,
+    required super.message,
     this.settingName,
     this.attemptedValue,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, settingName, attemptedValue];
 
   @override
-  String toString() => 'SettingsFailure: $message${settingName != null ? ' (setting: $settingName)' : ''}';
+  String toString() =>
+      'SettingsFailure: $message${settingName != null ? ' (setting: $settingName)' : ''}';
 }
 
 /// Failure when reading progress operations fail
 class ProgressFailure extends ReaderFailure {
   /// The operation that failed (save, load, update)
   final String operation;
-  
+
   /// Book ID associated with the progress
   final String? bookId;
-  
+
   /// Progress-specific error details
   final String? progressDetails;
 
   const ProgressFailure({
-    required String message,
+    required super.message,
     required this.operation,
     this.bookId,
     this.progressDetails,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, operation, bookId, progressDetails];
@@ -252,19 +262,19 @@ class ProgressFailure extends ReaderFailure {
 class MemoryFailure extends ReaderFailure {
   /// Operation that caused memory issue
   final String operation;
-  
+
   /// Memory usage in bytes (if available)
   final int? memoryUsage;
-  
+
   /// Memory limit in bytes (if available)
   final int? memoryLimit;
 
   const MemoryFailure({
-    required String message,
+    required super.message,
     required this.operation,
     this.memoryUsage,
     this.memoryLimit,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, operation, memoryUsage, memoryLimit];
@@ -284,7 +294,8 @@ class ReaderFailures {
   }
 
   /// Factory method for unsupported format errors
-  static Failure unsupportedFormat(String extension, List<String> supportedFormats) {
+  static Failure unsupportedFormat(
+      String extension, List<String> supportedFormats) {
     return UnsupportedFormatFailure(
       message: 'Unsupported file format',
       fileExtension: extension,
@@ -369,4 +380,48 @@ class ReaderFailures {
       operation: 'general',
     );
   }
+}
+
+/// Failure during progress calculation
+class ProgressCalculationFailure extends ReaderFailure {
+  /// Type of calculation that failed
+  final String? calculationType;
+
+  /// Book format related to the calculation
+  final String? bookFormat;
+
+  const ProgressCalculationFailure({
+    required super.message,
+    this.calculationType,
+    this.bookFormat,
+  });
+
+  @override
+  List<Object?> get props => [message, calculationType, bookFormat];
+
+  @override
+  String toString() =>
+      'ProgressCalculationFailure: $message${calculationType != null ? ' (type: $calculationType)' : ''}';
+}
+
+/// Failure during progress synchronization across formats
+class ProgressSyncFailure extends ReaderFailure {
+  /// Number of progress records that failed to sync
+  final int? failedRecords;
+
+  /// Book ID for the sync operation
+  final String? bookId;
+
+  const ProgressSyncFailure({
+    required super.message,
+    this.failedRecords,
+    this.bookId,
+  });
+
+  @override
+  List<Object?> get props => [message, failedRecords, bookId];
+
+  @override
+  String toString() =>
+      'ProgressSyncFailure: $message${bookId != null ? ' (book: $bookId)' : ''}';
 }

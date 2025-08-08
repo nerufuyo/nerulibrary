@@ -50,10 +50,10 @@ class FileManagerServiceImpl implements FileManagerService {
   Future<void> _initializeDirectories() async {
     final appDir = await getApplicationDocumentsDirectory();
     _appDocumentsDir = appDir.path;
-    _booksDir = path.join(_appDocumentsDir!, StorageConstants.DIR_BOOKS);
-    _coversDir = path.join(_appDocumentsDir!, StorageConstants.DIR_COVERS);
-    _tempDir = path.join(_appDocumentsDir!, StorageConstants.DIR_TEMP);
-    _cacheDir = path.join(_appDocumentsDir!, StorageConstants.DIR_CACHE);
+    _booksDir = path.join(_appDocumentsDir!, StorageConstants.dirBooks);
+    _coversDir = path.join(_appDocumentsDir!, StorageConstants.dirCovers);
+    _tempDir = path.join(_appDocumentsDir!, StorageConstants.dirTemp);
+    _cacheDir = path.join(_appDocumentsDir!, StorageConstants.dirCache);
   }
 
   @override
@@ -694,7 +694,7 @@ class FileManagerServiceImpl implements FileManagerService {
       final startTime = DateTime.now();
       final cutoffTime = olderThan != null 
           ? DateTime.now().subtract(olderThan)
-          : DateTime.now().subtract(StorageConstants.TEMP_FILE_RETENTION);
+          : DateTime.now().subtract(StorageConstants.tempFileRetention);
 
       int filesDeleted = 0;
       int bytesFreed = 0;
@@ -753,7 +753,7 @@ class FileManagerServiceImpl implements FileManagerService {
       final startTime = DateTime.now();
       final cutoffTime = olderThan != null 
           ? DateTime.now().subtract(olderThan)
-          : DateTime.now().subtract(StorageConstants.CACHE_FILE_RETENTION);
+          : DateTime.now().subtract(StorageConstants.cacheFileRetention);
 
       int filesDeleted = 0;
       int bytesFreed = 0;
@@ -777,7 +777,7 @@ class FileManagerServiceImpl implements FileManagerService {
 
       // Delete old files or files exceeding cache size limit
       int currentCacheSize = cacheFiles.fold<int>(0, (sum, entry) => sum + entry.value.size);
-      final maxSize = maxCacheSize ?? StorageConstants.MAX_CACHE_SIZE;
+      final maxSize = maxCacheSize ?? StorageConstants.maxCacheSize;
 
       for (final entry in cacheFiles) {
         final file = entry.key;
@@ -932,7 +932,7 @@ class FileManagerServiceImpl implements FileManagerService {
   Either<FileFailure, bool> validateFileFormat(String fileName) {
     try {
       final extension = path.extension(fileName).toLowerCase();
-      final supportedFormats = [StorageConstants.EXT_EPUB, StorageConstants.EXT_PDF, StorageConstants.EXT_TXT];
+      final supportedFormats = [StorageConstants.extEpub, StorageConstants.extPdf, StorageConstants.extTxt];
       
       if (!supportedFormats.contains(extension)) {
         return Left(UnsupportedFormatFailure(
@@ -953,11 +953,11 @@ class FileManagerServiceImpl implements FileManagerService {
   @override
   Either<FileFailure, bool> validateFileSize(int fileSizeBytes) {
     try {
-      if (fileSizeBytes > StorageConstants.MAX_BOOK_FILE_SIZE) {
+      if (fileSizeBytes > StorageConstants.maxBookFileSize) {
         return Left(FileSizeFailure(
           message: 'File size exceeds maximum allowed size',
           actualSize: fileSizeBytes,
-          maxAllowedSize: StorageConstants.MAX_BOOK_FILE_SIZE,
+          maxAllowedSize: StorageConstants.maxBookFileSize,
         ));
       }
       

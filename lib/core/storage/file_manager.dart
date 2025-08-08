@@ -164,7 +164,7 @@ class FileManager {
       
       // Check file size limit
       final fileSize = await _localStorage.getFileSize(tempPath);
-      if (fileSize > StorageConstants.MAX_COVER_FILE_SIZE) {
+      if (fileSize > StorageConstants.maxCoverFileSize) {
         await File(tempPath).delete();
         throw app_exceptions.FileSystemException(
           'Cover image too large: ${_formatBytes(fileSize)} (path: $tempPath)',
@@ -306,11 +306,11 @@ class FileManager {
   String _getFileExtension(String format) {
     switch (format.toLowerCase()) {
       case 'epub':
-        return StorageConstants.EXT_EPUB;
+        return StorageConstants.extEpub;
       case 'pdf':
-        return StorageConstants.EXT_PDF;
+        return StorageConstants.extPdf;
       case 'txt':
-        return StorageConstants.EXT_TXT;
+        return StorageConstants.extTxt;
       default:
         return '.${format.toLowerCase()}';
     }

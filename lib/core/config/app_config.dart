@@ -15,15 +15,15 @@ class AppConfig {
   AppConfig._();
   
   // Environment Variables
-  String get supabaseUrl => _getEnvVar(AppConstants.ENV_SUPABASE_URL, '');
-  String get supabaseAnonKey => _getEnvVar(AppConstants.ENV_SUPABASE_ANON_KEY, '');
-  String get apiBaseUrl => _getEnvVar(AppConstants.ENV_API_BASE_URL, 'https://api.example.com');
-  bool get debugMode => _getBoolEnvVar(AppConstants.ENV_DEBUG_MODE, kDebugMode);
+  String get supabaseUrl => _getEnvVar(AppConstants.envSupabaseUrl, '');
+  String get supabaseAnonKey => _getEnvVar(AppConstants.envSupabaseAnonKey, '');
+  String get apiBaseUrl => _getEnvVar(AppConstants.envApiBaseUrl, 'https://api.example.com');
+  bool get debugMode => _getBoolEnvVar(AppConstants.envDebugMode, kDebugMode);
   
   // App Information
-  String get appName => AppConstants.APP_NAME;
-  String get appVersion => AppConstants.APP_VERSION;
-  String get buildNumber => AppConstants.APP_BUILD_NUMBER;
+  String get appName => AppConstants.appName;
+  String get appVersion => AppConstants.appVersion;
+  String get buildNumber => AppConstants.appBuildNumber;
   
   // Platform Information
   bool get isAndroid => !kIsWeb && Platform.isAndroid;
@@ -40,28 +40,28 @@ class AppConfig {
   bool get enableCloudSync => supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
   
   // Network Configuration
-  Duration get networkTimeout => AppConstants.NETWORK_TIMEOUT;
-  Duration get connectionTimeout => AppConstants.CONNECTION_TIMEOUT;
-  Duration get receiveTimeout => AppConstants.RECEIVE_TIMEOUT;
+  Duration get networkTimeout => AppConstants.networkTimeout;
+  Duration get connectionTimeout => AppConstants.connectionTimeout;
+  Duration get receiveTimeout => AppConstants.receiveTimeout;
   
   // File and Storage Configuration
-  int get maxFileSizeMB => AppConstants.MAX_FILE_SIZE_MB;
-  int get maxDownloadQueueSize => AppConstants.MAX_DOWNLOAD_QUEUE_SIZE;
-  int get maxConcurrentDownloads => AppConstants.MAX_CONCURRENT_DOWNLOADS;
+  int get maxFileSizeMB => AppConstants.maxFileSizeMb;
+  int get maxDownloadQueueSize => AppConstants.maxDownloadQueueSize;
+  int get maxConcurrentDownloads => AppConstants.maxConcurrentDownloads;
   
   // Cache Configuration
-  Duration get cacheMetadataDuration => AppConstants.CACHE_DURATION_METADATA;
-  Duration get cacheSearchDuration => AppConstants.CACHE_DURATION_SEARCH;
-  Duration get cacheAuthorDuration => AppConstants.CACHE_DURATION_AUTHOR;
+  Duration get cacheMetadataDuration => AppConstants.cacheDurationMetadata;
+  Duration get cacheSearchDuration => AppConstants.cacheDurationSearch;
+  Duration get cacheAuthorDuration => AppConstants.cacheDurationAuthor;
   
   // Performance Configuration
-  int get maxMemoryUsageMB => AppConstants.MAX_MEMORY_USAGE_MB;
-  Duration get maxAppStartupTime => AppConstants.MAX_APP_STARTUP_TIME;
-  Duration get maxPageNavigationTime => AppConstants.MAX_PAGE_NAVIGATION_TIME;
+  int get maxMemoryUsageMB => AppConstants.maxMemoryUsageMb;
+  Duration get maxAppStartupTime => AppConstants.maxAppStartupTime;
+  Duration get maxPageNavigationTime => AppConstants.maxPageNavigationTime;
   
   // Database Configuration
-  String get databaseName => AppConstants.DATABASE_NAME;
-  int get databaseVersion => AppConstants.DATABASE_VERSION;
+  String get databaseName => AppConstants.databaseName;
+  int get databaseVersion => AppConstants.databaseVersion;
   
   // Validation Methods
   bool get isConfigurationValid {

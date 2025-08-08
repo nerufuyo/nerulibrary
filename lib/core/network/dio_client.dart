@@ -139,28 +139,28 @@ class DioClient {
     
     String message;
     switch (statusCode) {
-      case ApiConstants.HTTP_BAD_REQUEST:
+      case ApiConstants.httpBadRequest:
         message = 'Invalid request. Please check your input.';
         break;
-      case ApiConstants.HTTP_UNAUTHORIZED:
+      case ApiConstants.httpUnauthorized:
         message = 'Authentication required. Please sign in.';
         break;
-      case ApiConstants.HTTP_FORBIDDEN:
+      case ApiConstants.httpForbidden:
         message = 'Access denied. You don\'t have permission.';
         break;
-      case ApiConstants.HTTP_NOT_FOUND:
+      case ApiConstants.httpNotFound:
         message = 'Resource not found.';
         break;
-      case ApiConstants.HTTP_TOO_MANY_REQUESTS:
+      case ApiConstants.httpTooManyRequests:
         message = 'Too many requests. Please try again later.';
         break;
-      case ApiConstants.HTTP_INTERNAL_SERVER_ERROR:
+      case ApiConstants.httpInternalServerError:
         message = 'Server error. Please try again later.';
         break;
-      case ApiConstants.HTTP_BAD_GATEWAY:
+      case ApiConstants.httpBadGateway:
         message = 'Service temporarily unavailable.';
         break;
-      case ApiConstants.HTTP_SERVICE_UNAVAILABLE:
+      case ApiConstants.httpServiceUnavailable:
         message = 'Service unavailable. Please try again later.';
         break;
       default:

@@ -55,23 +55,23 @@ class ApiEndpoints {
 
 /// Project Gutenberg API endpoints
 class ProjectGutenbergEndpoints {
-  static String get baseUrl => ApiConstants.PROJECT_GUTENBERG_BASE_URL;
+  static String get baseUrl => ApiConstants.projectGutenbergBaseUrl;
   
   /// Build search URL
   static String search({
     required String query,
-    String format = ApiConstants.FORMAT_JSON,
-    int limit = ApiConstants.DEFAULT_SEARCH_LIMIT,
+    String format = ApiConstants.formatJson,
+    int limit = ApiConstants.defaultSearchLimit,
   }) {
     final params = <String, String>{
-      ApiConstants.QUERY_PARAM_SEARCH: query,
-      ApiConstants.QUERY_PARAM_FORMAT: format,
-      ApiConstants.QUERY_PARAM_LIMIT: limit.toString(),
+      ApiConstants.queryParamSearch: query,
+      ApiConstants.queryParamFormat: format,
+      ApiConstants.queryParamLimit: limit.toString(),
     };
     
     return ApiEndpoints._buildUrl(
       baseUrl,
-      ApiConstants.PROJECT_GUTENBERG_SEARCH,
+      ApiConstants.projectGutenbergSearch,
       params,
     );
   }
@@ -79,36 +79,36 @@ class ProjectGutenbergEndpoints {
   /// Build EPUB download URL
   static String epubDownload(String bookId) {
     return baseUrl + 
-           ApiConstants.PROJECT_GUTENBERG_EPUB.replaceAll('{id}', bookId);
+           ApiConstants.projectGutenbergEpub.replaceAll('{id}', bookId);
   }
   
   /// Build PDF download URL
   static String pdfDownload(String bookId) {
     return baseUrl + 
-           ApiConstants.PROJECT_GUTENBERG_PDF.replaceAll('{id}', bookId);
+           ApiConstants.projectGutenbergPdf.replaceAll('{id}', bookId);
   }
   
   /// Build text download URL
   static String textDownload(String bookId) {
     return baseUrl + 
-           ApiConstants.PROJECT_GUTENBERG_TEXT
+           ApiConstants.projectGutenbergText
                .replaceAll('{id}', bookId);
   }
 }
 
 /// Internet Archive API endpoints
 class InternetArchiveEndpoints {
-  static String get baseUrl => ApiConstants.INTERNET_ARCHIVE_BASE_URL;
+  static String get baseUrl => ApiConstants.internetArchiveBaseUrl;
   
   /// Build advanced search URL
   static String search({
     required String query,
-    String format = ApiConstants.FORMAT_JSON,
-    int rows = ApiConstants.DEFAULT_SEARCH_LIMIT,
+    String format = ApiConstants.formatJson,
+    int rows = ApiConstants.defaultSearchLimit,
     int page = 1,
   }) {
     final params = <String, String>{
-      ApiConstants.QUERY_PARAM_SEARCH: 'mediatype:texts AND ($query)',
+      ApiConstants.queryParamSearch: 'mediatype:texts AND ($query)',
       'output': format,
       'rows': rows.toString(),
       'page': page.toString(),
@@ -116,7 +116,7 @@ class InternetArchiveEndpoints {
     
     return ApiEndpoints._buildUrl(
       baseUrl,
-      ApiConstants.INTERNET_ARCHIVE_SEARCH,
+      ApiConstants.internetArchiveSearch,
       params,
     );
   }
@@ -124,14 +124,14 @@ class InternetArchiveEndpoints {
   /// Build metadata URL
   static String metadata(String identifier) {
     return baseUrl + 
-           ApiConstants.INTERNET_ARCHIVE_METADATA
+           ApiConstants.internetArchiveMetadata
                .replaceAll('{identifier}', identifier);
   }
   
   /// Build download URL
   static String download(String identifier, String filename) {
     return baseUrl + 
-           ApiConstants.INTERNET_ARCHIVE_DOWNLOAD
+           ApiConstants.internetArchiveDownload
                .replaceAll('{identifier}', identifier)
                .replaceAll('{filename}', filename);
   }
@@ -139,23 +139,23 @@ class InternetArchiveEndpoints {
 
 /// OpenLibrary API endpoints
 class OpenLibraryEndpoints {
-  static String get baseUrl => ApiConstants.OPENLIBRARY_BASE_URL;
+  static String get baseUrl => ApiConstants.openlibraryBaseUrl;
   
   /// Build search URL
   static String search({
     required String query,
-    int limit = ApiConstants.DEFAULT_SEARCH_LIMIT,
+    int limit = ApiConstants.defaultSearchLimit,
     int offset = 0,
   }) {
     final params = <String, String>{
-      ApiConstants.QUERY_PARAM_SEARCH: query,
-      ApiConstants.QUERY_PARAM_LIMIT: limit.toString(),
-      ApiConstants.QUERY_PARAM_OFFSET: offset.toString(),
+      ApiConstants.queryParamSearch: query,
+      ApiConstants.queryParamLimit: limit.toString(),
+      ApiConstants.queryParamOffset: offset.toString(),
     };
     
     return ApiEndpoints._buildUrl(
       baseUrl,
-      ApiConstants.OPENLIBRARY_SEARCH,
+      ApiConstants.openlibrarySearch,
       params,
     );
   }
@@ -163,7 +163,7 @@ class OpenLibraryEndpoints {
   /// Build works URL
   static String works(String workId) {
     return baseUrl + 
-           ApiConstants.OPENLIBRARY_WORKS.replaceAll('{work_id}', workId);
+           ApiConstants.openlibraryWorks.replaceAll('{work_id}', workId);
   }
   
   /// Build cover image URL

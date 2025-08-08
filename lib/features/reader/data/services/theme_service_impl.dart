@@ -58,7 +58,7 @@ class ThemeServiceImpl implements ThemeService {
   @override
   Future<Either<Failure, ThemeConfiguration>> getCurrentThemeConfiguration() async {
     try {
-      final configJson = _prefs.getString(StorageConstants.PREF_READING_THEME);
+      final configJson = _prefs.getString(StorageConstants.prefReadingTheme);
       
       if (configJson == null) {
         // Return default configuration
@@ -100,7 +100,7 @@ class ThemeServiceImpl implements ThemeService {
 
   Future<void> _saveConfigurationToStorage(ThemeConfiguration config) async {
     final configJson = jsonEncode(config.toJson());
-    await _prefs.setString(StorageConstants.PREF_READING_THEME, configJson);
+    await _prefs.setString(StorageConstants.prefReadingTheme, configJson);
   }
 
   @override

@@ -14,10 +14,10 @@ class InvalidSearchQueryFailure extends SearchFailure {
   final String validationError;
 
   const InvalidSearchQueryFailure({
-    required String message,
+    required super.message,
     required this.query,
     required this.validationError,
-  }) : super(message: message);
+  });
 
   /// Factory constructor for empty query
   factory InvalidSearchQueryFailure.emptyQuery() {
@@ -59,10 +59,10 @@ class SearchIndexFailure extends SearchFailure {
   final String? technicalDetails;
 
   const SearchIndexFailure({
-    required String message,
+    required super.message,
     required this.errorType,
     this.technicalDetails,
-  }) : super(message: message);
+  });
 
   /// Factory constructor for uninitialized index
   factory SearchIndexFailure.notInitialized() {
@@ -121,10 +121,10 @@ class SearchTimeoutFailure extends SearchFailure {
   final String query;
 
   const SearchTimeoutFailure({
-    required String message,
+    required super.message,
     required this.timeoutDuration,
     required this.query,
-  }) : super(message: message);
+  });
 
   /// Factory constructor for default timeout
   factory SearchTimeoutFailure.defaultTimeout(String query) {
@@ -148,10 +148,10 @@ class NoSearchResultsFailure extends SearchFailure {
   final Map<String, dynamic>? filters;
 
   const NoSearchResultsFailure({
-    required String message,
+    required super.message,
     required this.query,
     this.filters,
-  }) : super(message: message);
+  });
 
   /// Factory constructor for no results
   factory NoSearchResultsFailure.noResults(String query) {
@@ -189,11 +189,11 @@ class SearchPaginationFailure extends SearchFailure {
   final int? maxPage;
 
   const SearchPaginationFailure({
-    required String message,
+    required super.message,
     required this.page,
     required this.limit,
     this.maxPage,
-  }) : super(message: message);
+  });
 
   /// Factory constructor for invalid page
   factory SearchPaginationFailure.invalidPage(int page, int maxPage) {
@@ -230,11 +230,11 @@ class SearchFilterFailure extends SearchFailure {
   final String expectedFormat;
 
   const SearchFilterFailure({
-    required String message,
+    required super.message,
     required this.filterName,
     required this.filterValue,
     required this.expectedFormat,
-  }) : super(message: message);
+  });
 
   /// Factory constructor for invalid filter
   factory SearchFilterFailure.invalidFilter({
@@ -266,11 +266,11 @@ class SearchDatabaseFailure extends SearchFailure {
   final String? errorCode;
 
   const SearchDatabaseFailure({
-    required String message,
+    required super.message,
     required this.operation,
     this.queryDetails,
     this.errorCode,
-  }) : super(message: message);
+  });
 
   /// Factory constructor for FTS query failure
   factory SearchDatabaseFailure.ftsQueryFailed({
@@ -311,10 +311,10 @@ class SearchUnavailableFailure extends SearchFailure {
   final bool isTemporary;
 
   const SearchUnavailableFailure({
-    required String message,
+    required super.message,
     required this.reason,
     this.isTemporary = false,
-  }) : super(message: message);
+  });
 
   /// Factory constructor for feature disabled
   factory SearchUnavailableFailure.featureDisabled() {

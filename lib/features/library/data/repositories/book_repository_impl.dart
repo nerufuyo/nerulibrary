@@ -10,6 +10,7 @@ import '../../domain/repositories/book_repository.dart';
 import '../datasources/book_local_datasource.dart';
 import '../models/book_model.dart';
 import '../models/author_model.dart';
+import '../models/category_model.dart';
 
 /// Implementation of BookRepository
 /// 
@@ -535,62 +536,223 @@ class BookRepositoryImpl implements BookRepository {
   
   @override
   Future<Either<Failure, Category>> getCategoryById(String id) async {
-    return Left(UnknownFailure(message: 'Category operations not yet implemented'));
+    try {
+      final categoryModel = await _localDataSource.getCategoryById(id);
+      final category = categoryModel.toEntity();
+      return Right(category);
+    } on app_exceptions.NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, List<Category>>> getCategories({String? parentId, bool includeChildCategories = true}) async {
-    return Left(UnknownFailure(message: 'Category operations not yet implemented'));
+    try {
+      final categoryModels = await _localDataSource.getCategories(
+        parentId: parentId,
+        includeChildCategories: includeChildCategories,
+      );
+      final categories = categoryModels.map((model) => model.toEntity()).toList();
+      return Right(categories);
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, Category>> saveCategory(Category category) async {
-    return Left(UnknownFailure(message: 'Category operations not yet implemented'));
+    try {
+      final categoryModel = CategoryModel.fromEntity(category);
+      
+      // Check if category exists
+      try {
+        await _localDataSource.getCategoryById(category.id);
+        // If it exists, update it
+        final updatedModel = await _localDataSource.updateCategory(categoryModel);
+        return Right(updatedModel.toEntity());
+      } on app_exceptions.NotFoundException {
+        // If it doesn't exist, insert it
+        final insertedModel = await _localDataSource.insertCategory(categoryModel);
+        return Right(insertedModel.toEntity());
+      }
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, List<Book>>> getBooksByCategory(String categoryId, {int? limit, int? offset, bool includeSubcategories = false}) async {
-    return Left(UnknownFailure(message: 'Category operations not yet implemented'));
+    try {
+      final bookModels = await _localDataSource.getBooksByCategory(
+        categoryId,
+        limit: limit,
+        offset: offset,
+        includeSubcategories: includeSubcategories,
+      );
+      
+      // Convert to entities with relationships
+      final books = <Book>[];
+      for (final bookModel in bookModels) {
+        final authors = await _localDataSource.getBookAuthors(bookModel.id);
+        final categories = await _localDataSource.getBookCategories(bookModel.id);
+        
+        final book = bookModel.toEntity().copyWith(
+          authors: authors.map((author) => author.toEntity()).toList(),
+          categories: categories.map((category) => category.toEntity()).toList(),
+        );
+        
+        books.add(book);
+      }
+      
+      return Right(books);
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, List<Category>>> searchCategories(String query) async {
-    return Left(UnknownFailure(message: 'Category operations not yet implemented'));
+    try {
+      final categoryModels = await _localDataSource.searchCategories(query);
+      final categories = categoryModels.map((model) => model.toEntity()).toList();
+      return Right(categories);
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, Collection>> getCollectionById(String id) async {
-    return Left(UnknownFailure(message: 'Collection operations not yet implemented'));
+    try {
+      final collection = await _localDataSource.getCollectionById(id);
+      return Right(collection);
+    } on app_exceptions.NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, List<Collection>>> getCollections({int? limit, int? offset, bool publicOnly = false}) async {
-    return Left(UnknownFailure(message: 'Collection operations not yet implemented'));
+    try {
+      final collections = await _localDataSource.getCollections(
+        limit: limit,
+        offset: offset,
+        publicOnly: publicOnly,
+      );
+      return Right(collections);
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, Collection>> saveCollection(Collection collection) async {
-    return Left(UnknownFailure(message: 'Collection operations not yet implemented'));
+    try {
+      // Check if collection exists
+      try {
+        await _localDataSource.getCollectionById(collection.id);
+        // If it exists, update it
+        final updatedCollection = await _localDataSource.updateCollection(collection);
+        return Right(updatedCollection);
+      } on app_exceptions.NotFoundException {
+        // If it doesn't exist, insert it
+        final insertedCollection = await _localDataSource.insertCollection(collection);
+        return Right(insertedCollection);
+      }
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, void>> deleteCollection(String id) async {
-    return Left(UnknownFailure(message: 'Collection operations not yet implemented'));
+    try {
+      await _localDataSource.deleteCollection(id);
+      return const Right(null);
+    } on app_exceptions.NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, void>> addBookToCollection(String collectionId, String bookId) async {
-    return Left(UnknownFailure(message: 'Collection operations not yet implemented'));
+    try {
+      await _localDataSource.addBookToCollection(collectionId, bookId);
+      return const Right(null);
+    } on app_exceptions.NotFoundException catch (e) {
+      return Left(NotFoundFailure(message: e.message));
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, void>> removeBookFromCollection(String collectionId, String bookId) async {
-    return Left(UnknownFailure(message: 'Collection operations not yet implemented'));
+    try {
+      await _localDataSource.removeBookFromCollection(collectionId, bookId);
+      return const Right(null);
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override
   Future<Either<Failure, List<Book>>> getBooksInCollection(String collectionId, {int? limit, int? offset}) async {
-    return Left(UnknownFailure(message: 'Collection operations not yet implemented'));
+    try {
+      final bookModels = await _localDataSource.getBooksInCollection(
+        collectionId,
+        limit: limit,
+        offset: offset,
+      );
+      
+      // Convert to entities with relationships
+      final books = <Book>[];
+      for (final bookModel in bookModels) {
+        final authors = await _localDataSource.getBookAuthors(bookModel.id);
+        final categories = await _localDataSource.getBookCategories(bookModel.id);
+        
+        final book = bookModel.toEntity().copyWith(
+          authors: authors.map((author) => author.toEntity()).toList(),
+          categories: categories.map((category) => category.toEntity()).toList(),
+        );
+        
+        books.add(book);
+      }
+      
+      return Right(books);
+    } on app_exceptions.DatabaseException catch (e) {
+      return Left(DatabaseFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
   }
 
   @override

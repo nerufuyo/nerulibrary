@@ -2,7 +2,7 @@ import 'failures.dart';
 
 /// Base class for file management failures
 abstract class FileFailure extends Failure {
-  const FileFailure({required String message}) : super(message: message);
+  const FileFailure({required super.message});
 }
 
 /// Failure when file download operations fail
@@ -12,11 +12,11 @@ class DownloadFailure extends FileFailure {
   final String? errorCode;
 
   const DownloadFailure({
-    required String message,
+    required super.message,
     this.url,
     this.statusCode,
     this.errorCode,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, url, statusCode, errorCode];
@@ -31,10 +31,10 @@ class StorageFailure extends FileFailure {
   final StorageErrorType? errorType;
 
   const StorageFailure({
-    required String message,
+    required super.message,
     this.path,
     this.errorType,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, path, errorType];
@@ -49,10 +49,10 @@ class PermissionFailure extends FileFailure {
   final PermissionStatus? currentStatus;
 
   const PermissionFailure({
-    required String message,
+    required super.message,
     this.requiredPermission,
     this.currentStatus,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, requiredPermission, currentStatus];
@@ -68,11 +68,11 @@ class FileIntegrityFailure extends FileFailure {
   final String? filePath;
 
   const FileIntegrityFailure({
-    required String message,
+    required super.message,
     this.expectedHash,
     this.actualHash,
     this.filePath,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, expectedHash, actualHash, filePath];
@@ -87,10 +87,10 @@ class FileSizeFailure extends FileFailure {
   final int? maxAllowedSize;
 
   const FileSizeFailure({
-    required String message,
+    required super.message,
     this.actualSize,
     this.maxAllowedSize,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, actualSize, maxAllowedSize];
@@ -105,10 +105,10 @@ class UnsupportedFormatFailure extends FileFailure {
   final List<String>? supportedFormats;
 
   const UnsupportedFormatFailure({
-    required String message,
+    required super.message,
     this.fileExtension,
     this.supportedFormats,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, fileExtension, supportedFormats];
@@ -123,10 +123,10 @@ class NetworkFileFailure extends FileFailure {
   final NetworkErrorType errorType;
 
   const NetworkFileFailure({
-    required String message,
+    required super.message,
     required this.errorType,
     this.url,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, url, errorType];
@@ -141,10 +141,10 @@ class CleanupFailure extends FileFailure {
   final List<String>? failedPaths;
 
   const CleanupFailure({
-    required String message,
+    required super.message,
     this.targetPath,
     this.failedPaths,
-  }) : super(message: message);
+  });
 
   @override
   List<Object?> get props => [message, targetPath, failedPaths];

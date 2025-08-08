@@ -65,31 +65,31 @@ class LocalStorage {
   /// Get books storage directory
   String get booksDirectory {
     _ensureInitialized();
-    return path.join(_documentsPath!, StorageConstants.DIR_BOOKS);
+    return path.join(_documentsPath!, StorageConstants.dirBooks);
   }
   
   /// Get covers storage directory
   String get coversDirectory {
     _ensureInitialized();
-    return path.join(_documentsPath!, StorageConstants.DIR_COVERS);
+    return path.join(_documentsPath!, StorageConstants.dirCovers);
   }
   
   /// Get temporary files directory
   String get tempDirectory {
     _ensureInitialized();
-    return path.join(_tempPath!, StorageConstants.DIR_TEMP);
+    return path.join(_tempPath!, StorageConstants.dirTemp);
   }
   
   /// Get cache directory
   String get cacheDirectory {
     _ensureInitialized();
-    return path.join(_cachePath!, StorageConstants.DIR_CACHE);
+    return path.join(_cachePath!, StorageConstants.dirCache);
   }
   
   /// Get logs directory
   String get logsDirectory {
     _ensureInitialized();
-    return path.join(_appSupportPath!, StorageConstants.DIR_LOGS);
+    return path.join(_appSupportPath!, StorageConstants.dirLogs);
   }
   
   /// Get documents directory path
@@ -106,7 +106,7 @@ class LocalStorage {
   
   /// Generate book file path
   String getBookFilePath(String bookId, String format) {
-    final filename = StorageConstants.PATTERN_BOOK_FILE
+    final filename = StorageConstants.patternBookFile
         .replaceAll('{book_id}', bookId)
         .replaceAll('{format}', format);
     return path.join(booksDirectory, filename);
@@ -114,7 +114,7 @@ class LocalStorage {
   
   /// Generate cover file path
   String getCoverFilePath(String bookId) {
-    final filename = StorageConstants.PATTERN_COVER_FILE
+    final filename = StorageConstants.patternCoverFile
         .replaceAll('{book_id}', bookId);
     return path.join(coversDirectory, filename);
   }
@@ -122,7 +122,7 @@ class LocalStorage {
   /// Generate temporary file path
   String getTempFilePath(String filename) {
     final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    final tempFilename = StorageConstants.PATTERN_TEMP_FILE
+    final tempFilename = StorageConstants.patternTempFile
         .replaceAll('{timestamp}', timestamp)
         .replaceAll('{filename}', filename);
     return path.join(tempDirectory, tempFilename);
@@ -234,7 +234,7 @@ class LocalStorage {
   
   /// Clean up temporary files older than specified duration
   Future<void> cleanupTempFiles({
-    Duration retention = StorageConstants.TEMP_FILE_RETENTION,
+    Duration retention = StorageConstants.tempFileRetention,
   }) async {
     try {
       final tempDir = Directory(tempDirectory);
@@ -259,7 +259,7 @@ class LocalStorage {
   
   /// Clean up cache files older than specified duration
   Future<void> cleanupCacheFiles({
-    Duration retention = StorageConstants.CACHE_FILE_RETENTION,
+    Duration retention = StorageConstants.cacheFileRetention,
   }) async {
     try {
       final cacheDir = Directory(cacheDirectory);
