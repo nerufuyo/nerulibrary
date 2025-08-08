@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/api_entities.dart';
 
 /// API Status Card widget for displaying API connection status
-/// 
+///
 /// Shows the current status of API connections with appropriate
 /// loading, error, and success states.
 class ApiStatusCard extends StatelessWidget {
@@ -70,8 +70,7 @@ class ApiStatusCard extends StatelessWidget {
   }
 
   bool _isErrorState() {
-    return status == 'error' || 
-           (apiStatus != null && !apiStatus!.isAvailable);
+    return status == 'error' || (apiStatus != null && !apiStatus!.isAvailable);
   }
 
   String _getStatusString() {
@@ -83,7 +82,7 @@ class ApiStatusCard extends StatelessWidget {
 
   Widget _buildStatusIcon() {
     final statusString = _getStatusString();
-    
+
     switch (statusString) {
       case 'loading':
         return const SizedBox(
@@ -114,7 +113,7 @@ class ApiStatusCard extends StatelessWidget {
 
   Widget _buildStatusText() {
     final statusString = _getStatusString();
-    
+
     switch (statusString) {
       case 'loading':
         return const Text('Checking API status...');

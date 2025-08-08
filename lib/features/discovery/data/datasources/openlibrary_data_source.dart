@@ -8,17 +8,17 @@ import '../../domain/entities/api_entities.dart';
 import '../../domain/failures/api_failures.dart';
 
 /// OpenLibrary API data source for book discovery
-/// 
+///
 /// Provides access to OpenLibrary's extensive book database with
 /// comprehensive metadata, author information, and cover images.
 /// Implements rate limiting of 100 requests per minute as per API guidelines.
 abstract class OpenLibraryDataSource {
   /// Search for books using OpenLibrary's search API
-  /// 
+  ///
   /// [query] - Search terms (title, author, ISBN, etc.)
   /// [page] - Page number for pagination (1-based)
   /// [limit] - Number of results per page (max 100)
-  /// 
+  ///
   /// Returns [SearchResult] with book listings and metadata
   Future<SearchResult> searchBooks({
     required String query,
@@ -27,39 +27,39 @@ abstract class OpenLibraryDataSource {
   });
 
   /// Get detailed information about a specific work
-  /// 
+  ///
   /// [workId] - OpenLibrary work identifier (e.g., "OL82563W")
-  /// 
+  ///
   /// Returns [BookDetail] with comprehensive book information
   Future<BookDetail> getWorkDetail(String workId);
 
   /// Get book information by ISBN or other identifiers
-  /// 
+  ///
   /// [identifiers] - List of book identifiers (ISBN, OCLC, etc.)
-  /// 
+  ///
   /// Returns [List<BookDetail>] with book details
   Future<List<BookDetail>> getBooksByIdentifiers(List<String> identifiers);
 
   /// Get author information
-  /// 
+  ///
   /// [authorId] - OpenLibrary author identifier (e.g., "OL23919A")
-  /// 
+  ///
   /// Returns author details as Map
   Future<Map<String, dynamic>> getAuthorDetail(String authorId);
 
   /// Get book cover image URLs
-  /// 
+  ///
   /// [coverId] - OpenLibrary cover identifier
   /// [size] - Cover size ('S', 'M', 'L')
-  /// 
+  ///
   /// Returns cover image URL
   Future<String?> getCoverImageUrl(String coverId, {String size = 'M'});
 
   /// Get trending/popular books
-  /// 
+  ///
   /// [subject] - Optional subject filter
   /// [limit] - Number of results (max 50)
-  /// 
+  ///
   /// Returns [SearchResult] with popular books
   Future<SearchResult> getTrendingBooks({
     String? subject,
@@ -73,20 +73,20 @@ abstract class OpenLibraryDataSource {
 /// Implementation of OpenLibrary data source
 class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
   final DioClient _dioClient;
-  
+
   // API Configuration
   static const String _baseUrl = 'https://openlibrary.org';
   static const String _coversBaseUrl = 'https://covers.openlibrary.org/b';
   static const Duration _requestTimeout = Duration(seconds: 30);
   static const int _maxRetries = 3;
-  
+
   // Rate limiting: 100 requests per minute
   static const int _maxRequestsPerMinute = 100;
   static const Duration _rateLimitWindow = Duration(minutes: 1);
-  
+
   // Rate limiting tracking
   final List<DateTime> _requestTimestamps = [];
-  
+
   OpenLibraryDataSourceImpl({
     required DioClient dioClient,
   }) : _dioClient = dioClient;
@@ -98,7 +98,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
     int limit = 20,
   }) async {
     await _enforceRateLimit();
-    
+
     try {
       // Validate parameters
       if (query.trim().isEmpty) {
@@ -107,14 +107,14 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           validationErrors: ['query_empty'],
         );
       }
-      
+
       if (limit < 1 || limit > 100) {
         throw const ValidationApiFailure(
           message: 'Limit must be between 1 and 100',
           validationErrors: ['invalid_limit'],
         );
       }
-      
+
       if (page < 1) {
         throw const ValidationApiFailure(
           message: 'Page must be greater than 0',
@@ -124,7 +124,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
 
       // Calculate offset for pagination
       final offset = (page - 1) * limit;
-      
+
       final response = await _dioClient.get(
         '$_baseUrl/search.json',
         queryParameters: {
@@ -166,7 +166,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
       }
 
       final data = response.data as Map<String, dynamic>;
-      
+
       // Validate response structure
       if (!data.containsKey('docs') || !data.containsKey('numFound')) {
         throw const ParseApiFailure(
@@ -176,7 +176,6 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
       }
 
       return _parseSearchResponse(data, query, page, limit);
-      
     } on DioException catch (e) {
       throw _handleDioException(e, 'search books');
     } catch (e) {
@@ -191,7 +190,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
   @override
   Future<BookDetail> getWorkDetail(String workId) async {
     await _enforceRateLimit();
-    
+
     try {
       // Validate work ID format
       if (workId.trim().isEmpty) {
@@ -200,7 +199,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           validationErrors: ['work_id_empty'],
         );
       }
-      
+
       if (!workId.startsWith('OL') || !workId.endsWith('W')) {
         throw const ValidationApiFailure(
           message: 'Invalid OpenLibrary work ID format',
@@ -225,7 +224,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           apiProvider: 'OpenLibrary',
         );
       }
-      
+
       if (response.statusCode != 200) {
         throw HttpApiFailure(
           message: 'Failed to get work detail',
@@ -234,7 +233,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
       }
 
       final data = response.data as Map<String, dynamic>;
-      
+
       // Get additional edition information
       final editionsResponse = await _dioClient.get(
         '$_baseUrl/works/$workId/editions.json',
@@ -253,7 +252,6 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
       }
 
       return _parseWorkDetail(data, editionsData);
-      
     } on DioException catch (e) {
       throw _handleDioException(e, 'get work detail');
     } catch (e) {
@@ -266,9 +264,10 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
   }
 
   @override
-  Future<List<BookDetail>> getBooksByIdentifiers(List<String> identifiers) async {
+  Future<List<BookDetail>> getBooksByIdentifiers(
+      List<String> identifiers) async {
     await _enforceRateLimit();
-    
+
     try {
       if (identifiers.isEmpty) {
         throw const ValidationApiFailure(
@@ -276,7 +275,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           validationErrors: ['identifiers_empty'],
         );
       }
-      
+
       if (identifiers.length > 100) {
         throw const ValidationApiFailure(
           message: 'Too many identifiers (max 100)',
@@ -299,7 +298,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
       }
 
       final bibkeys = cleanIdentifiers.join(',');
-      
+
       final response = await _dioClient.get(
         '$_baseUrl/api/books',
         queryParameters: {
@@ -324,7 +323,6 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
 
       final data = response.data as Map<String, dynamic>;
       return _parseBooksByIdentifiers(data);
-      
     } on DioException catch (e) {
       throw _handleDioException(e, 'get books by identifiers');
     } catch (e) {
@@ -339,7 +337,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
   @override
   Future<Map<String, dynamic>> getAuthorDetail(String authorId) async {
     await _enforceRateLimit();
-    
+
     try {
       if (authorId.trim().isEmpty) {
         throw const ValidationApiFailure(
@@ -347,7 +345,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           validationErrors: ['author_id_empty'],
         );
       }
-      
+
       if (!authorId.startsWith('OL') || !authorId.endsWith('A')) {
         throw const ValidationApiFailure(
           message: 'Invalid OpenLibrary author ID format',
@@ -372,7 +370,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           apiProvider: 'OpenLibrary',
         );
       }
-      
+
       if (response.statusCode != 200) {
         throw HttpApiFailure(
           message: 'Failed to get author detail',
@@ -381,7 +379,6 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
       }
 
       return response.data as Map<String, dynamic>;
-      
     } on DioException catch (e) {
       throw _handleDioException(e, 'get author detail');
     } catch (e) {
@@ -399,14 +396,13 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
       if (coverId.trim().isEmpty) {
         return null;
       }
-      
+
       if (!['S', 'M', 'L'].contains(size)) {
         size = 'M'; // Default to medium
       }
 
       // OpenLibrary covers URL format
       return '$_coversBaseUrl/id/$coverId-$size.jpg';
-      
     } catch (e) {
       // Don't throw for cover image URLs, just return null
       return null;
@@ -419,7 +415,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
     int limit = 20,
   }) async {
     await _enforceRateLimit();
-    
+
     try {
       if (limit < 1 || limit > 50) {
         throw const ValidationApiFailure(
@@ -474,7 +470,6 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
 
       final data = response.data as Map<String, dynamic>;
       return _parseSearchResponse(data, 'trending', 1, limit);
-      
     } on DioException catch (e) {
       throw _handleDioException(e, 'get trending books');
     } catch (e) {
@@ -503,17 +498,18 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
 
       final currentTime = DateTime.now();
       final recentRequests = _requestTimestamps
-          .where((timestamp) => currentTime.difference(timestamp) < _rateLimitWindow)
+          .where((timestamp) =>
+              currentTime.difference(timestamp) < _rateLimitWindow)
           .length;
 
       return {
         'status': response.statusCode == 200 ? 'available' : 'error',
-        'response_time_ms': response.extra['request_duration']?.inMilliseconds ?? 0,
+        'response_time_ms':
+            response.extra['request_duration']?.inMilliseconds ?? 0,
         'rate_limit_remaining': _maxRequestsPerMinute - recentRequests,
         'rate_limit_reset_in_seconds': _getRateLimitResetTime(),
         'last_checked': currentTime.toIso8601String(),
       };
-      
     } catch (e) {
       return {
         'status': 'error',
@@ -528,17 +524,17 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
   /// Enforce rate limiting (100 requests per minute)
   Future<void> _enforceRateLimit() async {
     final now = DateTime.now();
-    
+
     // Remove timestamps older than the window
     _requestTimestamps.removeWhere(
       (timestamp) => now.difference(timestamp) >= _rateLimitWindow,
     );
-    
+
     // Check if we're at the limit
     if (_requestTimestamps.length >= _maxRequestsPerMinute) {
       final oldestRequest = _requestTimestamps.first;
       final waitTime = _rateLimitWindow - now.difference(oldestRequest);
-      
+
       if (waitTime.inMilliseconds > 0) {
         await Future.delayed(waitTime);
       }
@@ -553,15 +549,15 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
   /// Get seconds until rate limit resets
   int _getRateLimitResetTime() {
     if (_requestTimestamps.isEmpty) return 0;
-    
+
     final oldestRequest = _requestTimestamps.first;
     final resetTime = oldestRequest.add(_rateLimitWindow);
     final now = DateTime.now();
-    
+
     if (resetTime.isAfter(now)) {
       return resetTime.difference(now).inSeconds;
     }
-    
+
     return 0;
   }
 
@@ -575,11 +571,11 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
     try {
       final docs = data['docs'] as List<dynamic>;
       final totalResults = data['numFound'] as int;
-      
+
       final books = docs.map((doc) => _parseSearchResultBook(doc)).toList();
-      
+
       final totalPages = (totalResults / limit).ceil();
-      
+
       return SearchResult(
         books: books,
         totalCount: totalResults,
@@ -589,7 +585,6 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
         apiProvider: 'OpenLibrary',
         searchTime: DateTime.now(),
       );
-      
     } catch (e) {
       throw ParseApiFailure(
         message: 'Failed to parse search response: $e',
@@ -603,25 +598,27 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
     try {
       final workKey = doc['key'] as String? ?? '';
       final workId = workKey.replaceFirst('/works/', '');
-      
+
       final authorNames = (doc['author_name'] as List<dynamic>?)
-          ?.map((name) => name.toString())
-          .toList() ?? [];
-      
+              ?.map((name) => name.toString())
+              .toList() ??
+          [];
+
       final subjects = (doc['subject'] as List<dynamic>?)
-          ?.map((subject) => subject.toString())
-          .take(10) // Limit subjects to avoid huge lists
-          .toList() ?? [];
-      
+              ?.map((subject) => subject.toString())
+              .take(10) // Limit subjects to avoid huge lists
+              .toList() ??
+          [];
+
       String? coverUrl;
       final coverId = doc['cover_i'];
       if (coverId != null) {
         coverUrl = '$_coversBaseUrl/id/$coverId-M.jpg';
       }
-      
+
       // Determine available formats (OpenLibrary doesn't provide direct downloads)
       final availableFormats = <BookFormat>[];
-      
+
       // Parse publication date
       DateTime? publishDate;
       final year = doc['first_publish_year'];
@@ -632,14 +629,14 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           // Ignore invalid dates
         }
       }
-      
+
       return BookSearchItem(
         id: workId,
         title: doc['title']?.toString() ?? 'Unknown Title',
         authors: authorNames,
         description: null, // Not available in search results
-        language: (doc['language'] as List<dynamic>?)?.isNotEmpty == true 
-            ? (doc['language'] as List<dynamic>).first.toString() 
+        language: (doc['language'] as List<dynamic>?)?.isNotEmpty == true
+            ? (doc['language'] as List<dynamic>).first.toString()
             : null,
         subjects: subjects,
         publishDate: publishDate,
@@ -657,7 +654,6 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           'number_of_pages_median': doc['number_of_pages_median'],
         },
       );
-      
     } catch (e) {
       throw ParseApiFailure(
         message: 'Failed to parse search result book: $e',
@@ -674,9 +670,9 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
     try {
       final key = workData['key'] as String? ?? '';
       final workId = key.replaceFirst('/works/', '');
-      
+
       final title = workData['title']?.toString() ?? 'Unknown Title';
-      
+
       // Parse description
       String? description;
       final descValue = workData['description'];
@@ -685,7 +681,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
       } else if (descValue is String) {
         description = descValue;
       }
-      
+
       // Parse authors
       final authors = <BookAuthor>[];
       final authorEntries = workData['authors'] as List<dynamic>? ?? [];
@@ -701,13 +697,14 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           ));
         }
       }
-      
+
       // Parse subjects
       final subjects = (workData['subjects'] as List<dynamic>?)
-          ?.map((subject) => subject.toString())
-          .take(20)
-          .toList() ?? [];
-      
+              ?.map((subject) => subject.toString())
+              .take(20)
+              .toList() ??
+          [];
+
       // Parse covers
       final coverUrls = <String>[];
       final covers = workData['covers'] as List<dynamic>?;
@@ -715,19 +712,19 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
         final coverId = covers.first;
         coverUrls.add('$_coversBaseUrl/id/$coverId-L.jpg');
       }
-      
+
       // Extract publication info from editions
       DateTime? publishDate;
       String? publisher;
       String? language;
       int? pageCount;
       String? isbn;
-      
+
       if (editionsData != null) {
         final entries = editionsData['entries'] as List<dynamic>? ?? [];
         if (entries.isNotEmpty) {
           final firstEdition = entries.first as Map<String, dynamic>;
-          
+
           final publishDateStr = firstEdition['publish_date']?.toString();
           if (publishDateStr != null) {
             try {
@@ -739,22 +736,23 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
               // Ignore invalid dates
             }
           }
-          
+
           final publishers = firstEdition['publishers'] as List<dynamic>?;
           if (publishers != null && publishers.isNotEmpty) {
             publisher = publishers.first.toString();
           }
-          
+
           final languages = firstEdition['languages'] as List<dynamic>?;
           if (languages != null && languages.isNotEmpty) {
             final langEntry = languages.first;
             if (langEntry is Map && langEntry.containsKey('key')) {
-              language = langEntry['key'].toString().replaceFirst('/languages/', '');
+              language =
+                  langEntry['key'].toString().replaceFirst('/languages/', '');
             }
           }
-          
+
           pageCount = firstEdition['number_of_pages'] as int?;
-          
+
           final isbns = [
             ...(firstEdition['isbn_10'] as List<dynamic>? ?? []),
             ...(firstEdition['isbn_13'] as List<dynamic>? ?? []),
@@ -764,7 +762,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           }
         }
       }
-      
+
       return BookDetail(
         id: workId,
         title: title,
@@ -796,7 +794,6 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
         },
         fetchedAt: DateTime.now(),
       );
-      
     } catch (e) {
       throw ParseApiFailure(
         message: 'Failed to parse work detail: $e',
@@ -809,14 +806,14 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
   List<BookDetail> _parseBooksByIdentifiers(Map<String, dynamic> data) {
     try {
       final books = <BookDetail>[];
-      
+
       for (final entry in data.entries) {
         final identifier = entry.key;
         final bookData = entry.value as Map<String, dynamic>;
-        
+
         // Extract basic information
         final title = bookData['title']?.toString() ?? 'Unknown Title';
-        
+
         final authors = <BookAuthor>[];
         final authorList = bookData['authors'] as List<dynamic>? ?? [];
         for (final author in authorList) {
@@ -829,23 +826,27 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
             ));
           }
         }
-        
+
         final publishers = (bookData['publishers'] as List<dynamic>?)
-            ?.map((pub) => pub['name']?.toString() ?? pub.toString())
-            .toList() ?? [];
-        
+                ?.map((pub) => pub['name']?.toString() ?? pub.toString())
+                .toList() ??
+            [];
+
         final subjects = (bookData['subjects'] as List<dynamic>?)
-            ?.map((subject) => subject['name']?.toString() ?? subject.toString())
-            .take(10)
-            .toList() ?? [];
-        
+                ?.map((subject) =>
+                    subject['name']?.toString() ?? subject.toString())
+                .take(10)
+                .toList() ??
+            [];
+
         final coverUrls = <String>[];
         final cover = bookData['cover'];
         if (cover is Map && cover.containsKey('medium')) {
           coverUrls.add(cover['medium'].toString());
         }
-        
-        final identifierObj = bookData['identifiers'] as Map<String, dynamic>? ?? {};
+
+        final identifierObj =
+            bookData['identifiers'] as Map<String, dynamic>? ?? {};
         String? isbn;
         if (identifierObj.containsKey('isbn_13')) {
           final isbn13List = identifierObj['isbn_13'] as List<dynamic>?;
@@ -858,7 +859,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
             isbn = isbn10List.first.toString();
           }
         }
-        
+
         books.add(BookDetail(
           id: identifier,
           title: title,
@@ -888,9 +889,8 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           fetchedAt: DateTime.now(),
         ));
       }
-      
+
       return books;
-      
     } catch (e) {
       throw ParseApiFailure(
         message: 'Failed to parse books by identifiers: $e',
@@ -909,7 +909,7 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
           message: 'Timeout during $operation: ${e.message}',
           timeout: const Duration(seconds: 30),
         );
-      
+
       case DioExceptionType.badResponse:
         final statusCode = e.response?.statusCode;
         switch (statusCode) {
@@ -954,21 +954,23 @@ class OpenLibraryDataSourceImpl implements OpenLibraryDataSource {
               statusCode: statusCode ?? 0,
             );
         }
-      
+
       case DioExceptionType.cancel:
         return const NetworkApiFailure(message: 'Request was cancelled');
-      
+
       case DioExceptionType.badCertificate:
         return const NetworkApiFailure(message: 'SSL certificate error');
-      
+
       case DioExceptionType.connectionError:
-        return const NetworkApiFailure(message: 'Connection error during OpenLibrary request');
-      
+        return const NetworkApiFailure(
+            message: 'Connection error during OpenLibrary request');
+
       case DioExceptionType.unknown:
         if (e.error is SocketException) {
           return const NetworkApiFailure(message: 'No internet connection');
         }
-        return NetworkApiFailure(message: 'Unknown error during $operation: ${e.message}');
+        return NetworkApiFailure(
+            message: 'Unknown error during $operation: ${e.message}');
     }
   }
 }

@@ -8,16 +8,17 @@ import '../../domain/entities/api_entities.dart';
 import '../../domain/failures/api_failures.dart';
 
 /// Data source for Internet Archive Books API
-/// 
+///
 /// This class handles direct communication with the Internet Archive API.
-/// It implements rate limiting (100 requests/minute), error handling, 
+/// It implements rate limiting (100 requests/minute), error handling,
 /// and data validation according to the project specifications.
 class InternetArchiveDataSource {
   final Dio _dio;
   DateTime? _lastRequestTime;
   int _requestCount = 0;
   static const Duration _rateWindowDuration = Duration(minutes: 1);
-  static const int _maxRequestsPerWindow = ApiConstants.internetArchiveRequestsPerMinute;
+  static const int _maxRequestsPerWindow =
+      ApiConstants.internetArchiveRequestsPerMinute;
 
   InternetArchiveDataSource({required Dio dio}) : _dio = dio {
     _dio.options.baseUrl = ApiConstants.internetArchiveBaseUrl;
@@ -75,7 +76,8 @@ class InternetArchiveDataSource {
 
     try {
       final response = await _dio.get(
-        ApiConstants.internetArchiveMetadata.replaceAll('{identifier}', identifier),
+        ApiConstants.internetArchiveMetadata
+            .replaceAll('{identifier}', identifier),
       );
 
       _validateResponse(response);
@@ -100,19 +102,20 @@ class InternetArchiveDataSource {
     try {
       // First get metadata to find available files
       final metadataResponse = await _dio.get(
-        ApiConstants.internetArchiveMetadata.replaceAll('{identifier}', identifier),
+        ApiConstants.internetArchiveMetadata
+            .replaceAll('{identifier}', identifier),
       );
 
       _validateResponse(metadataResponse);
-      
+
       final metadata = metadataResponse.data as Map<String, dynamic>;
       final files = metadata['files'] as List<dynamic>? ?? [];
-      
+
       String? filename;
       for (final file in files) {
         final fileData = file as Map<String, dynamic>;
         final fileName = fileData['name'] as String? ?? '';
-        
+
         switch (format) {
           case BookFormat.epub:
             if (fileName.toLowerCase().endsWith('.epub')) {
@@ -127,7 +130,7 @@ class InternetArchiveDataSource {
             }
             break;
           case BookFormat.text:
-            if (fileName.toLowerCase().endsWith('.txt') || 
+            if (fileName.toLowerCase().endsWith('.txt') ||
                 fileName.toLowerCase().contains('_djvu.txt')) {
               filename = fileName;
               break;
@@ -136,7 +139,7 @@ class InternetArchiveDataSource {
           default:
             continue;
         }
-        
+
         if (filename != null) break;
       }
 
@@ -148,9 +151,10 @@ class InternetArchiveDataSource {
         );
       }
 
-      final downloadUrl = '${_dio.options.baseUrl}${ApiConstants.internetArchiveDownload}'
-          .replaceAll('{identifier}', identifier)
-          .replaceAll('{filename}', filename);
+      final downloadUrl =
+          '${_dio.options.baseUrl}${ApiConstants.internetArchiveDownload}'
+              .replaceAll('{identifier}', identifier)
+              .replaceAll('{filename}', filename);
 
       // Get file size from metadata
       final fileInfo = files.firstWhere(
@@ -182,7 +186,7 @@ class InternetArchiveDataSource {
   /// Check API status and connectivity
   Future<Map<String, dynamic>> checkApiStatus() async {
     final startTime = DateTime.now();
-    
+
     try {
       final response = await _dio.get(
         '/services/search/v1/scrape',
@@ -210,7 +214,7 @@ class InternetArchiveDataSource {
       };
     } on DioException catch (e) {
       final responseTime = DateTime.now().difference(startTime);
-      
+
       return {
         'provider': 'Internet Archive',
         'isAvailable': false,
@@ -275,11 +279,10 @@ class InternetArchiveDataSource {
     await _enforceRateLimit();
 
     try {
-      final dateFilter = days != null 
-          ? 'addeddate:[${_formatDateFilter(days)} TO null]'
-          : '';
-      
-      final query = dateFilter.isNotEmpty 
+      final dateFilter =
+          days != null ? 'addeddate:[${_formatDateFilter(days)} TO null]' : '';
+
+      final query = dateFilter.isNotEmpty
           ? 'mediatype:texts AND $dateFilter'
           : 'mediatype:texts';
 
@@ -322,19 +325,20 @@ class InternetArchiveDataSource {
   /// Enforce rate limiting (100 requests per minute)
   Future<void> _enforceRateLimit() async {
     final now = DateTime.now();
-    
+
     // Reset counter if window has passed
-    if (_lastRequestTime != null && 
+    if (_lastRequestTime != null &&
         now.difference(_lastRequestTime!) >= _rateWindowDuration) {
       _requestCount = 0;
     }
-    
+
     // Check if we've exceeded the rate limit
     if (_requestCount >= _maxRequestsPerWindow) {
       final waitTime = _getResetTime();
       if (waitTime > 0) {
         throw RateLimitApiFailure(
-          message: 'Rate limit exceeded. Please wait before making more requests.',
+          message:
+              'Rate limit exceeded. Please wait before making more requests.',
           retryAfter: Duration(seconds: waitTime),
           apiProvider: 'Internet Archive',
         );
@@ -342,7 +346,7 @@ class InternetArchiveDataSource {
         _requestCount = 0; // Reset if wait time has passed
       }
     }
-    
+
     _requestCount++;
     _lastRequestTime = now;
   }
@@ -350,10 +354,10 @@ class InternetArchiveDataSource {
   /// Get time until rate limit reset in seconds
   int _getResetTime() {
     if (_lastRequestTime == null) return 0;
-    
+
     final elapsed = DateTime.now().difference(_lastRequestTime!);
     final remaining = _rateWindowDuration - elapsed;
-    
+
     return remaining.inSeconds > 0 ? remaining.inSeconds : 0;
   }
 
@@ -405,9 +409,8 @@ class InternetArchiveDataSource {
     int page,
   ) {
     try {
-      final Map<String, dynamic> responseData = data is Map<String, dynamic>
-          ? data
-          : json.decode(data.toString());
+      final Map<String, dynamic> responseData =
+          data is Map<String, dynamic> ? data : json.decode(data.toString());
 
       final response = responseData['response'] as Map<String, dynamic>? ?? {};
       final docs = response['docs'] as List<dynamic>? ?? [];
@@ -438,7 +441,7 @@ class InternetArchiveDataSource {
   Map<String, dynamic> _processBookItem(Map<String, dynamic> docData) {
     final identifier = docData['identifier']?.toString() ?? '';
     final title = docData['title']?.toString() ?? 'Unknown Title';
-    
+
     // Handle creators (can be string or array)
     final creatorsData = docData['creator'];
     List<String> authors = [];
@@ -475,7 +478,11 @@ class InternetArchiveDataSource {
       'subjects': subjects,
       'publishDate': _parseDate(docData['date']),
       'coverUrl': _generateCoverUrl(identifier),
-      'availableFormats': ['epub', 'pdf', 'text'], // Internet Archive typically has multiple formats
+      'availableFormats': [
+        'epub',
+        'pdf',
+        'text'
+      ], // Internet Archive typically has multiple formats
       'downloadCount': _parseInt(docData['downloads']),
       'rating': _parseDouble(docData['avg_rating']),
       'apiProvider': 'Internet Archive',
@@ -489,12 +496,12 @@ class InternetArchiveDataSource {
     String identifier,
   ) {
     try {
-      final Map<String, dynamic> metadata = data is Map<String, dynamic>
-          ? data
-          : json.decode(data.toString());
+      final Map<String, dynamic> metadata =
+          data is Map<String, dynamic> ? data : json.decode(data.toString());
 
-      final metadataFields = metadata['metadata'] as Map<String, dynamic>? ?? {};
-      
+      final metadataFields =
+          metadata['metadata'] as Map<String, dynamic>? ?? {};
+
       // Convert metadata to book item format
       final bookItem = _processBookItem({
         'identifier': identifier,
@@ -507,14 +514,14 @@ class InternetArchiveDataSource {
         'downloads': metadata['item']?['downloads'],
         'avg_rating': metadata['reviews']?['avg_rating'],
       });
-      
+
       // Add additional detail fields
       bookItem['fullDescription'] = metadataFields['description']?.toString();
       bookItem['publisher'] = metadataFields['publisher']?.toString();
       bookItem['isbn'] = metadataFields['isbn']?.toString();
       bookItem['pageCount'] = null; // Not typically provided
       bookItem['fetchedAt'] = DateTime.now().toIso8601String();
-      
+
       return bookItem;
     } catch (e) {
       throw ParseApiFailure(
@@ -527,22 +534,24 @@ class InternetArchiveDataSource {
   /// Extract available formats from files list
   List<String> _extractAvailableFormats(List<dynamic> files) {
     final formats = <String>[];
-    
+
     for (final file in files) {
       final fileData = file as Map<String, dynamic>;
       final fileName = fileData['name'] as String? ?? '';
-      
-      if (fileName.toLowerCase().endsWith('.epub') && !formats.contains('EPUB')) {
+
+      if (fileName.toLowerCase().endsWith('.epub') &&
+          !formats.contains('EPUB')) {
         formats.add('EPUB');
-      } else if (fileName.toLowerCase().endsWith('.pdf') && !formats.contains('PDF')) {
+      } else if (fileName.toLowerCase().endsWith('.pdf') &&
+          !formats.contains('PDF')) {
         formats.add('PDF');
-      } else if ((fileName.toLowerCase().endsWith('.txt') || 
-                 fileName.toLowerCase().contains('_djvu.txt')) && 
-                !formats.contains('Text')) {
+      } else if ((fileName.toLowerCase().endsWith('.txt') ||
+              fileName.toLowerCase().contains('_djvu.txt')) &&
+          !formats.contains('Text')) {
         formats.add('Text');
       }
     }
-    
+
     return formats;
   }
 
@@ -607,15 +616,15 @@ class InternetArchiveDataSource {
           message: 'Request timeout: ${e.message}',
           timeout: const Duration(seconds: 30),
         );
-      
+
       case DioExceptionType.connectionError:
         return NetworkApiFailure(
           message: 'Connection error: ${e.message}',
         );
-      
+
       case DioExceptionType.badResponse:
         final statusCode = e.response?.statusCode ?? 0;
-        
+
         if (statusCode == 404) {
           return BookNotFoundApiFailure(
             message: 'Resource not found',
@@ -640,12 +649,12 @@ class InternetArchiveDataSource {
             response: e.response?.data,
           );
         }
-      
+
       case DioExceptionType.cancel:
         return NetworkApiFailure(
           message: 'Request was cancelled',
         );
-      
+
       case DioExceptionType.unknown:
         if (e.error is SocketException) {
           return NetworkApiFailure(
@@ -656,7 +665,7 @@ class InternetArchiveDataSource {
           message: 'Unknown error: ${e.message}',
           originalError: e,
         );
-      
+
       default:
         return UnknownApiFailure(
           message: 'Unexpected error: ${e.message}',

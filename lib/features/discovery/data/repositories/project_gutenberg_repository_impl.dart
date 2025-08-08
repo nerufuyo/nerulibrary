@@ -6,7 +6,7 @@ import '../../domain/repositories/book_discovery_repository.dart';
 import '../datasources/project_gutenberg_data_source.dart';
 
 /// Project Gutenberg implementation of BookDiscoveryRepository
-/// 
+///
 /// This repository provides access to Project Gutenberg's collection of
 /// public domain books through their API. It implements comprehensive
 /// error handling, rate limiting, and data validation.
@@ -152,7 +152,8 @@ class ProjectGutenbergRepository implements BookDiscoveryRepository {
   }
 
   @override
-  Future<Either<ApiFailure, BookAuthor>> getAuthorDetail(String authorId) async {
+  Future<Either<ApiFailure, BookAuthor>> getAuthorDetail(
+      String authorId) async {
     // Project Gutenberg doesn't provide detailed author information
     return Left(ServiceUnavailableApiFailure(
       message: 'Author details not available in Project Gutenberg API',
@@ -310,15 +311,16 @@ class ProjectGutenbergRepository implements BookDiscoveryRepository {
   /// Check if the book format is supported by Project Gutenberg
   bool _isSupportedFormat(BookFormat format) {
     return format == BookFormat.epub ||
-           format == BookFormat.pdf ||
-           format == BookFormat.text;
+        format == BookFormat.pdf ||
+        format == BookFormat.text;
   }
 
   /// Map response data to SearchResult entity
   SearchResult _mapToSearchResult(Map<String, dynamic> data) {
     final booksData = data['books'] as List<dynamic>;
     final books = booksData
-        .map((bookData) => _mapToBookSearchItem(bookData as Map<String, dynamic>))
+        .map((bookData) =>
+            _mapToBookSearchItem(bookData as Map<String, dynamic>))
         .toList();
 
     return SearchResult(
@@ -380,8 +382,9 @@ class ProjectGutenbergRepository implements BookDiscoveryRepository {
 
     // Extract download URLs from metadata
     final downloadUrls = <BookFormat, String>{};
-    final formatsData = data['metadata']['formats'] as Map<String, dynamic>? ?? {};
-    
+    final formatsData =
+        data['metadata']['formats'] as Map<String, dynamic>? ?? {};
+
     for (final entry in formatsData.entries) {
       if (entry.key.contains('epub')) {
         downloadUrls[BookFormat.epub] = entry.value.toString();
@@ -420,7 +423,8 @@ class ProjectGutenbergRepository implements BookDiscoveryRepository {
   /// Map response data to DownloadInfo entity
   DownloadInfo _mapToDownloadInfo(Map<String, dynamic> data) {
     final headersData = data['headers'] as Map<String, dynamic>;
-    final headers = headersData.map((key, value) => MapEntry(key, value.toString()));
+    final headers =
+        headersData.map((key, value) => MapEntry(key, value.toString()));
 
     return DownloadInfo(
       bookId: data['bookId'] as String,
@@ -443,7 +447,7 @@ class ProjectGutenbergRepository implements BookDiscoveryRepository {
       responseTime: Duration(milliseconds: data['responseTime'] as int),
       errorMessage: data['errorMessage'] as String?,
       rateLimitRemaining: data['rateLimitRemaining'] as int?,
-      rateLimitReset: data['rateLimitReset'] != null 
+      rateLimitReset: data['rateLimitReset'] != null
           ? Duration(seconds: data['rateLimitReset'] as int)
           : null,
       version: data['version'] as String,

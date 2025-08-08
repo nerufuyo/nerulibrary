@@ -6,17 +6,18 @@ import '../../domain/repositories/book_discovery_repository.dart';
 import '../datasources/openlibrary_data_source.dart';
 
 /// Repository implementation for OpenLibrary API
-/// 
+///
 /// Provides book discovery capabilities using OpenLibrary's extensive database.
 /// Implements caching, rate limiting, and comprehensive error handling.
-class OpenLibraryRepository implements BookDiscoveryRepository, CacheableRepository {
+class OpenLibraryRepository
+    implements BookDiscoveryRepository, CacheableRepository {
   final OpenLibraryDataSource _dataSource;
-  
+
   // Cache for storing recent results
   final Map<String, CachedResult<SearchResult>> _searchCache = {};
   final Map<String, CachedResult<BookDetail>> _detailCache = {};
   final Map<String, CachedResult<BookAuthor>> _authorCache = {};
-  
+
   static const Duration _cacheTimeout = Duration(minutes: 10);
 
   OpenLibraryRepository({
@@ -117,7 +118,6 @@ class OpenLibraryRepository implements BookDiscoveryRepository, CacheableReposit
       _cacheSearchResult(cacheKey, result);
 
       return Right(result);
-
     } on ApiFailure catch (failure) {
       return Left(failure);
     } catch (e) {
@@ -154,7 +154,6 @@ class OpenLibraryRepository implements BookDiscoveryRepository, CacheableReposit
       _cacheBookDetail(cacheKey, result);
 
       return Right(result);
-
     } on ApiFailure catch (failure) {
       return Left(failure);
     } catch (e) {
@@ -181,7 +180,7 @@ class OpenLibraryRepository implements BookDiscoveryRepository, CacheableReposit
   Future<Either<ApiFailure, ApiStatus>> checkApiStatus() async {
     try {
       final statusData = await _dataSource.checkApiStatus();
-      
+
       final status = ApiStatus(
         provider: 'OpenLibrary',
         isAvailable: statusData['status'] == 'available',
@@ -198,7 +197,6 @@ class OpenLibraryRepository implements BookDiscoveryRepository, CacheableReposit
       );
 
       return Right(status);
-
     } catch (e) {
       return Left(UnknownApiFailure(
         message: 'Failed to check API status: $e',
@@ -208,7 +206,8 @@ class OpenLibraryRepository implements BookDiscoveryRepository, CacheableReposit
   }
 
   @override
-  Future<Either<ApiFailure, BookAuthor>> getAuthorDetail(String authorId) async {
+  Future<Either<ApiFailure, BookAuthor>> getAuthorDetail(
+      String authorId) async {
     final cacheKey = _buildCacheKey('author', {'id': authorId});
 
     // Try to get cached result
@@ -226,18 +225,19 @@ class OpenLibraryRepository implements BookDiscoveryRepository, CacheableReposit
       }
 
       final authorData = await _dataSource.getAuthorDetail(authorId);
-      
+
       final author = BookAuthor(
         id: authorId,
         name: authorData['name']?.toString() ?? 'Unknown Author',
         birthDate: _parseDate(authorData['birth_date']),
         deathDate: _parseDate(authorData['death_date']),
-        biography: authorData['bio'] is Map 
+        biography: authorData['bio'] is Map
             ? (authorData['bio'] as Map)['value']?.toString()
             : authorData['bio']?.toString(),
         aliases: (authorData['alternate_names'] as List<dynamic>?)
-            ?.map((name) => name.toString())
-            .toList() ?? [],
+                ?.map((name) => name.toString())
+                .toList() ??
+            [],
         wikipediaUrl: authorData['wikipedia']?.toString(),
         metadata: {
           'openlibrary_key': authorData['key'],
@@ -249,7 +249,6 @@ class OpenLibraryRepository implements BookDiscoveryRepository, CacheableReposit
 
       _cacheAuthor(cacheKey, author);
       return Right(author);
-
     } on ApiFailure catch (failure) {
       return Left(failure);
     } catch (e) {
@@ -336,7 +335,7 @@ class OpenLibraryRepository implements BookDiscoveryRepository, CacheableReposit
     // Return common OpenLibrary subjects
     return const Right([
       'Fiction',
-      'History', 
+      'History',
       'Biography & Autobiography',
       'Science',
       'Philosophy',
@@ -408,12 +407,12 @@ class OpenLibraryRepository implements BookDiscoveryRepository, CacheableReposit
   @override
   Future<void> clearExpiredCache(Duration maxAge) async {
     final now = DateTime.now();
-    _searchCache.removeWhere((key, value) => 
-        now.difference(value.cachedAt) > maxAge);
-    _detailCache.removeWhere((key, value) => 
-        now.difference(value.cachedAt) > maxAge);
-    _authorCache.removeWhere((key, value) => 
-        now.difference(value.cachedAt) > maxAge);
+    _searchCache
+        .removeWhere((key, value) => now.difference(value.cachedAt) > maxAge);
+    _detailCache
+        .removeWhere((key, value) => now.difference(value.cachedAt) > maxAge);
+    _authorCache
+        .removeWhere((key, value) => now.difference(value.cachedAt) > maxAge);
   }
 
   @override
@@ -422,7 +421,8 @@ class OpenLibraryRepository implements BookDiscoveryRepository, CacheableReposit
       'searchCacheSize': _searchCache.length,
       'detailCacheSize': _detailCache.length,
       'authorCacheSize': _authorCache.length,
-      'totalCacheSize': _searchCache.length + _detailCache.length + _authorCache.length,
+      'totalCacheSize':
+          _searchCache.length + _detailCache.length + _authorCache.length,
       'cacheTimeout': _cacheTimeout.toString(),
     };
   }
@@ -482,28 +482,27 @@ class OpenLibraryRepository implements BookDiscoveryRepository, CacheableReposit
     final sortedParams = Map.fromEntries(
       params.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
     );
-    final paramString = sortedParams.entries
-        .map((e) => '${e.key}=${e.value}')
-        .join('&');
+    final paramString =
+        sortedParams.entries.map((e) => '${e.key}=${e.value}').join('&');
     return 'openlibrary_${operation}_$paramString';
   }
 
   /// Parse date string to DateTime
   DateTime? _parseDate(dynamic dateValue) {
     if (dateValue == null) return null;
-    
+
     try {
       final dateStr = dateValue.toString();
-      
+
       // Try various date formats used by OpenLibrary
       if (RegExp(r'^\d{4}$').hasMatch(dateStr)) {
         return DateTime(int.parse(dateStr));
       }
-      
+
       if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(dateStr)) {
         return DateTime.parse(dateStr);
       }
-      
+
       // Handle other date formats as needed
       return null;
     } catch (e) {
