@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../constants/app_constants.dart';
 
@@ -14,12 +15,27 @@ class AppConfig {
 
   AppConfig._();
 
-  // Environment Variables
-  String get supabaseUrl => _getEnvVar(AppConstants.envSupabaseUrl, '');
-  String get supabaseAnonKey => _getEnvVar(AppConstants.envSupabaseAnonKey, '');
+  /// Initialize app configuration with .env file
+  static Future<void> initialize() async {
+    try {
+      await dotenv.load(fileName: '.env');
+    } catch (e) {
+      // Fallback to platform environment if .env file is not found
+      if (kDebugMode) {
+        print(
+            'Warning: .env file not found, using platform environment variables');
+      }
+    }
+  }
+
+  // Environment Variables using flutter_dotenv
+  String get supabaseUrl =>
+      _getEnvVar('SUPABASE_URL', 'https://msvkfgsslldlhmhesutk.supabase.co');
+  String get supabaseAnonKey => _getEnvVar('SUPABASE_ANON_KEY',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1zdmtmZ3NzbGxkbGhtaGVzdXRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NDY3NDYsImV4cCI6MjA3MDMyMjc0Nn0.haCJrw_09PgGBF4lbBwvxb5pspn72Yn_QZBhnwYdV1g');
   String get apiBaseUrl =>
-      _getEnvVar(AppConstants.envApiBaseUrl, 'https://api.example.com');
-  bool get debugMode => _getBoolEnvVar(AppConstants.envDebugMode, kDebugMode);
+      _getEnvVar('API_BASE_URL', 'https://api.example.com');
+  bool get debugMode => _getBoolEnvVar('DEBUG_MODE', kDebugMode);
 
   // App Information
   String get appName => AppConstants.appName;
@@ -91,7 +107,8 @@ class AppConfig {
   // Private helper methods
   String _getEnvVar(String key, String defaultValue) {
     try {
-      return Platform.environment[key] ?? defaultValue;
+      // First try to get from dotenv, then fallback to platform environment
+      return dotenv.env[key] ?? Platform.environment[key] ?? defaultValue;
     } catch (e) {
       return defaultValue;
     }
@@ -99,7 +116,7 @@ class AppConfig {
 
   bool _getBoolEnvVar(String key, bool defaultValue) {
     try {
-      final value = Platform.environment[key];
+      final value = dotenv.env[key] ?? Platform.environment[key];
       if (value == null) return defaultValue;
       return value.toLowerCase() == 'true';
     } catch (e) {

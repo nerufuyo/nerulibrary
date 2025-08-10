@@ -19,6 +19,7 @@ dependencies:
   # Core Utilities
   equatable: ^2.0.5
   dartz: ^0.10.1
+  flutter_dotenv: ^5.1.0
 
   # Backend & Storage
   supabase_flutter: ^2.9.0
@@ -81,5 +82,6 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/json/
+    - .env
 
   # Note: Font assets will be added when actual font files are available

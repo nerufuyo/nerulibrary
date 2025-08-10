@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/config/app_config.dart';
 import 'core/config/supabase_config.dart';
 import 'core/startup/app_startup_manager.dart';
 import 'features/reader/presentation/providers/theme_providers.dart';
@@ -12,6 +13,9 @@ import 'app.dart';
 /// Initializes core services and providers before starting the app.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize app configuration (including .env loading)
+  await AppConfig.initialize();
 
   // Initialize performance monitoring and optimized startup
   await AppStartupManager.instance.initialize();

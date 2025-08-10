@@ -11,13 +11,13 @@ void main() {
     late BookLocalDataSourceImpl dataSource;
     late DatabaseConfig databaseConfig;
 
-    setUpAll(() {
-      // Initialize Flutter bindings for testing
+    setUpAll(() async {
       TestWidgetsFlutterBinding.ensureInitialized();
-      
+
       // Initialize FFI for testing
       sqfliteFfiInit();
-      
+      databaseFactory = databaseFactoryFfi;
+
       // Use in-memory database for testing
       databaseFactory = databaseFactoryFfi;
     });
@@ -26,7 +26,7 @@ void main() {
       // Create a fresh database instance for each test
       databaseConfig = DatabaseConfig.instance;
       dataSource = BookLocalDataSourceImpl(databaseConfig: databaseConfig);
-      
+
       // Clean up any existing database
       await databaseConfig.deleteDatabase();
     });
@@ -38,14 +38,14 @@ void main() {
     test('should create database with correct schema', () async {
       // Act
       final db = await databaseConfig.database;
-      
+
       // Assert - Check that all tables exist
       final tables = await db.rawQuery(
         "SELECT name FROM sqlite_master WHERE type='table'",
       );
-      
+
       final tableNames = tables.map((table) => table['name']).toSet();
-      
+
       expect(tableNames, contains('books'));
       expect(tableNames, contains('authors'));
       expect(tableNames, contains('book_authors'));
@@ -63,14 +63,14 @@ void main() {
     test('should create database indexes', () async {
       // Act
       final db = await databaseConfig.database;
-      
+
       // Assert - Check that indexes exist
       final indexes = await db.rawQuery(
         "SELECT name FROM sqlite_master WHERE type='index'",
       );
-      
+
       final indexNames = indexes.map((index) => index['name']).toSet();
-      
+
       expect(indexNames, contains('idx_books_title'));
       expect(indexNames, contains('idx_books_format'));
       expect(indexNames, contains('idx_books_source'));
@@ -121,7 +121,7 @@ void main() {
     test('should create book-author relationship', () async {
       // Arrange
       final now = DateTime.now().millisecondsSinceEpoch;
-      
+
       final bookModel = BookModel(
         id: 'test-book-1',
         title: 'Test Book',
@@ -130,7 +130,7 @@ void main() {
         createdAt: now,
         updatedAt: now,
       );
-      
+
       final authorModel = AuthorModel(
         id: 'test-author-1',
         name: 'Test Author',
@@ -142,7 +142,7 @@ void main() {
       await dataSource.insertBook(bookModel);
       await dataSource.insertAuthor(authorModel);
       await dataSource.addBookAuthor('test-book-1', 'test-author-1');
-      
+
       final bookAuthors = await dataSource.getBookAuthors('test-book-1');
 
       // Assert
@@ -154,7 +154,7 @@ void main() {
     test('should search books by title', () async {
       // Arrange
       final now = DateTime.now().millisecondsSinceEpoch;
-      
+
       final book1 = BookModel(
         id: 'book-1',
         title: 'Flutter Development Guide',
@@ -163,7 +163,7 @@ void main() {
         createdAt: now,
         updatedAt: now,
       );
-      
+
       final book2 = BookModel(
         id: 'book-2',
         title: 'Android Programming',
@@ -176,7 +176,7 @@ void main() {
       // Act
       await dataSource.insertBook(book1);
       await dataSource.insertBook(book2);
-      
+
       final searchResults = await dataSource.searchBooks(query: 'Flutter');
 
       // Assert
@@ -187,7 +187,7 @@ void main() {
     test('should get books count', () async {
       // Arrange
       final now = DateTime.now().millisecondsSinceEpoch;
-      
+
       final book1 = BookModel(
         id: 'book-1',
         title: 'Book 1',
@@ -196,7 +196,7 @@ void main() {
         createdAt: now,
         updatedAt: now,
       );
-      
+
       final book2 = BookModel(
         id: 'book-2',
         title: 'Book 2',
@@ -209,7 +209,7 @@ void main() {
       // Act
       await dataSource.insertBook(book1);
       await dataSource.insertBook(book2);
-      
+
       final count = await dataSource.getBooksCount();
 
       // Assert
@@ -266,7 +266,7 @@ void main() {
     test('should get books by format', () async {
       // Arrange
       final now = DateTime.now().millisecondsSinceEpoch;
-      
+
       final epubBook = BookModel(
         id: 'epub-book',
         title: 'EPUB Book',
@@ -275,7 +275,7 @@ void main() {
         createdAt: now,
         updatedAt: now,
       );
-      
+
       final pdfBook = BookModel(
         id: 'pdf-book',
         title: 'PDF Book',
@@ -288,7 +288,7 @@ void main() {
       // Act
       await dataSource.insertBook(epubBook);
       await dataSource.insertBook(pdfBook);
-      
+
       final epubBooks = await dataSource.getBooksByFormat('epub');
 
       // Assert

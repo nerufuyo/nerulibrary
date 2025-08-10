@@ -8,12 +8,6 @@ class AppConstants {
   static const String appVersion = '1.0.0';
   static const String appBuildNumber = '1';
 
-  // Environment
-  static const String envSupabaseUrl = 'SUPABASE_URL';
-  static const String envSupabaseAnonKey = 'SUPABASE_ANON_KEY';
-  static const String envApiBaseUrl = 'API_BASE_URL';
-  static const String envDebugMode = 'DEBUG_MODE';
-
   // Network Timeouts
   static const Duration networkTimeout = Duration(seconds: 30);
   static const Duration connectionTimeout = Duration(seconds: 15);
