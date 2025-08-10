@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/navigation/route_paths.dart';
 import '../providers/auth_providers.dart';
+import '../providers/guest_mode_provider.dart';
 
 /// Splash page for app initialization and authentication check
 /// 
@@ -36,9 +37,41 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       // User is authenticated, go to library
       context.go(RoutePaths.library);
     } else {
-      // User is not authenticated, go to login
-      context.go(RoutePaths.login);
+      // User is not authenticated, show welcome options
+      _showWelcomeDialog();
     }
+  }
+
+  /// Show welcome dialog with guest mode option
+  void _showWelcomeDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Welcome to LiteraLib'),
+        content: const Text(
+          'Choose how you\'d like to explore your digital library:',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.go(RoutePaths.login);
+            },
+            child: const Text('Sign In'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              // Enable guest mode
+              await ref.read(guestModeProvider.notifier).enableGuestMode();
+              context.go(RoutePaths.library);
+            },
+            child: const Text('Browse as Guest'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

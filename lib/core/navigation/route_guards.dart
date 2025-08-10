@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/authentication/presentation/providers/auth_providers.dart';
+import '../../features/authentication/presentation/providers/guest_mode_provider.dart';
 import 'route_paths.dart';
 
 /// Route guard provider for managing navigation permissions
@@ -26,15 +27,21 @@ class RouteGuard extends ChangeNotifier {
     _ref.listen(currentUserProvider, (previous, next) {
       notifyListeners();
     });
+    
+    // Listen to guest mode changes and notify router
+    _ref.listen(guestModeProvider, (previous, next) {
+      notifyListeners();
+    });
   }
 
   /// Main redirect logic for route protection
   /// 
   /// Determines if a user should be redirected based on their current
-  /// authentication status and the route they're trying to access.
+  /// authentication status, guest mode, and the route they're trying to access.
   String? redirect(BuildContext context, GoRouterState state) {
     final authState = _ref.read(currentUserProvider);
     final isLoggedIn = authState.hasValue && authState.value != null;
+    final accessMode = _ref.read(appAccessModeProvider);
     final currentLocation = state.uri.path;
 
     // Allow access to authentication pages when not logged in
@@ -42,8 +49,14 @@ class RouteGuard extends ChangeNotifier {
       if (_isAuthRoute(currentLocation)) {
         return null; // Allow access to auth routes
       }
-      // Redirect to login for protected routes
-      return RoutePaths.login;
+      
+      // If user has guest mode enabled, allow access to main app
+      if (accessMode.canReadBooks) {
+        return null; // Allow guest access to app
+      }
+      
+      // Redirect to splash for auth choice
+      return RoutePaths.splash;
     }
 
     // Redirect logged-in users away from auth pages
@@ -51,7 +64,7 @@ class RouteGuard extends ChangeNotifier {
       return RoutePaths.library;
     }
 
-    // Allow access to all other routes when logged in
+    // Allow access to all other routes when logged in or in guest mode
     return null;
   }
 
@@ -70,15 +83,39 @@ class RouteGuard extends ChangeNotifier {
 
   /// Check if user can access a specific route
   bool canAccessRoute(String routePath) {
+    final accessMode = _ref.read(appAccessModeProvider);
+    
     if (_isAuthRoute(routePath)) {
       return !isAuthenticated; // Can access auth routes only when not logged in
     }
-    return isAuthenticated; // Can access protected routes only when logged in
+    
+    // Allow access to main app routes in guest mode or authenticated mode
+    return accessMode.canReadBooks;
   }
 
   /// Get appropriate initial location based on auth state
   String getInitialLocation() {
-    return isAuthenticated ? RoutePaths.library : RoutePaths.splash;
+    final accessMode = _ref.read(appAccessModeProvider);
+    
+    if (accessMode.isAuthenticated) {
+      return RoutePaths.library;
+    } else if (accessMode.isGuest) {
+      return RoutePaths.library;
+    } else {
+      return RoutePaths.splash;
+    }
+  }
+
+  /// Check if guest mode is enabled
+  bool get isGuestMode {
+    final accessMode = _ref.read(appAccessModeProvider);
+    return accessMode.isGuest;
+  }
+
+  /// Check if user can save/favorite books
+  bool get canSaveBooks {
+    final accessMode = _ref.read(appAccessModeProvider);
+    return accessMode.canSaveBooks;
   }
 }
 
@@ -94,6 +131,39 @@ class NavigationHelper {
     } else {
       context.go(RoutePaths.login);
     }
+  }
+
+  /// Show authentication required dialog
+  static void showAuthRequiredDialog(
+    BuildContext context, {
+    String title = 'Login Required',
+    String message = 'Please log in to save books and access your personal library.',
+    VoidCallback? onLogin,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              if (onLogin != null) {
+                onLogin();
+              } else {
+                toLogin(context);
+              }
+            },
+            child: const Text('Login'),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Navigate to book detail page

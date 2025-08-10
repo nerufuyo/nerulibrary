@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/navigation/route_paths.dart';
-import '../providers/auth_providers.dart';
 import '../widgets/auth_text_field.dart';
+import '../providers/auth_providers.dart';
+import '../providers/guest_mode_provider.dart';
 import '../widgets/auth_button.dart';
 
 /// Login page for user authentication
@@ -163,6 +164,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   isLoading: isLoading,
                 ),
                 
+                const SizedBox(height: 16),
+                
+                // Guest Mode Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton(
+                    onPressed: isLoading ? null : _handleGuestMode,
+                    child: const Text('Continue as Guest'),
+                  ),
+                ),
+                
                 const SizedBox(height: 24),
                 
                 // Register Link
@@ -187,5 +200,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleGuestMode() async {
+    // Enable guest mode
+    await ref.read(guestModeProvider.notifier).enableGuestMode();
+    
+    if (mounted) {
+      context.go(RoutePaths.library);
+    }
   }
 }

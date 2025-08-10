@@ -9,6 +9,7 @@ import '../../data/datasources/user_remote_datasource.dart';
 import '../../data/datasources/user_remote_datasource_impl.dart';
 import '../../data/datasources/user_local_datasource.dart';
 import '../../data/datasources/user_local_datasource_impl.dart';
+import 'guest_mode_provider.dart';
 
 /// Authentication-related providers for the app
 ///
@@ -48,7 +49,7 @@ final userLocalDataSourceProvider = Provider<UserLocalDataSource>((ref) {
 // User state provider
 final currentUserProvider =
     StateNotifierProvider<UserNotifier, AsyncValue<User?>>((ref) {
-  return UserNotifier(ref.read(userRepositoryProvider));
+  return UserNotifier(ref.read(userRepositoryProvider), ref);
 });
 
 // Auth notifier provider (alias for currentUserProvider for better semantics)
@@ -57,8 +58,9 @@ final authNotifierProvider = currentUserProvider;
 /// User state notifier for managing current user state
 class UserNotifier extends StateNotifier<AsyncValue<User?>> {
   final UserRepository _userRepository;
+  final Ref _ref;
 
-  UserNotifier(this._userRepository) : super(const AsyncValue.data(null));
+  UserNotifier(this._userRepository, this._ref) : super(const AsyncValue.data(null));
 
   /// Load current user
   Future<void> loadCurrentUser() async {
@@ -83,7 +85,11 @@ class UserNotifier extends StateNotifier<AsyncValue<User?>> {
 
     result.fold(
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
-      (user) => state = AsyncValue.data(user),
+      (user) {
+        state = AsyncValue.data(user);
+        // Disable guest mode when user successfully logs in
+        _ref.read(guestModeProvider.notifier).disableGuestMode();
+      },
     );
   }
 
@@ -105,7 +111,11 @@ class UserNotifier extends StateNotifier<AsyncValue<User?>> {
 
     result.fold(
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
-      (user) => state = AsyncValue.data(user),
+      (user) {
+        state = AsyncValue.data(user);
+        // Disable guest mode when user successfully signs up
+        _ref.read(guestModeProvider.notifier).disableGuestMode();
+      },
     );
   }
 
@@ -117,6 +127,12 @@ class UserNotifier extends StateNotifier<AsyncValue<User?>> {
       (failure) => state = AsyncValue.error(failure, StackTrace.current),
       (_) => state = const AsyncValue.data(null),
     );
+  }
+
+  /// Switch from guest mode to authenticated mode after login
+  Future<void> switchFromGuestMode() async {
+    // This method is called after successful login from guest mode
+    // The user state will be updated by the login process
   }
 
   /// Update user profile
